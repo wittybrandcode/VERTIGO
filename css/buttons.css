@@ -1,0 +1,21 @@
+/* VERTIGO buttons — square HS pattern: glyph + word, slate hover, off-white primary. */
+.ibtn {
+  min-height: 44px; min-width: 44px; padding: 5px 10px; cursor: pointer;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font: inherit;
+}
+.ibtn svg { width: 17px; height: 17px; }
+.ibtn .g { font-size: 15px; line-height: 1.1; }
+.ibtn .w { font-size: 9px; letter-spacing: .4px; color: var(--muted); line-height: 1; }
+.ibtn:hover { background: var(--panel-hi); border-color: #4a4a5e; color: var(--bright); }
+.ibtn:hover .w { color: var(--bright); }
+.ibtn:active { transform: scale(0.96); }
+.ibtn.primary { border-color: var(--border-hi); color: var(--bright); }
+.ibtn.primary:hover { background: var(--coke); border-color: var(--coke); color: #161620; }
+.ibtn.primary:hover .w { color: #161620; }
+.ibtn:disabled { opacity: .4; cursor: default; }
+.ibtn:disabled:hover { background: var(--panel-2); border-color: var(--border); }
+.ibtn.primary .w { color: var(--text); }
+.ibtn:focus-visible { outline: 2px solid var(--coke); outline-offset: 1px; }

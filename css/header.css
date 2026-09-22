@@ -1,0 +1,9 @@
+/* VERTIGO header — brand + version + debug toggle slot. */
+header {
+  display: flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+header svg { width: 20px; height: 20px; }
+header .name { font-weight: 700; letter-spacing: 2px; font-size: 13px; }
+header .ver { margin-left: auto; color: var(--muted); font-size: 11px; }

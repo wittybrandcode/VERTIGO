@@ -1,0 +1,26 @@
+/* VERTIGO base — reset, body, generic row, scrollbar, footer/status. */
+* { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 11px/1.35 system-ui, "Segoe UI", Tahoma, sans-serif;
+  width: 100%; min-height: 100%; padding: 0;
+  user-select: none;
+}
+.row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+.row:last-child { margin-bottom: 0; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2b2b38; }
+::-webkit-scrollbar-thumb:hover { background: var(--coke); }
+footer {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-top: 1px solid var(--border);
+  color: var(--muted); font-size: 11px; min-height: 24px;
+}
+#vrt-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text); flex: none; }
+footer[data-kind="working"] #vrt-dot { background: var(--coke); animation: pulse 1s infinite; }
+footer[data-kind="ok"] #vrt-dot { background: var(--text); }
+footer[data-kind="err"] #vrt-dot { background: var(--danger); }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { footer[data-kind="working"] #vrt-dot { animation: none; } }

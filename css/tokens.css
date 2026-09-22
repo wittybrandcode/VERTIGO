@@ -1,0 +1,17 @@
+/* VERTIGO tokens — Industrial Slate. FROZEN: new colors need documented reason. */
+:root {
+  --bg: #111114;
+  --panel: #17171d;
+  --panel-2: #1e1e27;
+  --panel-hi: #2b2b38;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-hi: rgba(255, 255, 255, 0.20);
+  --focus: #5b8def;
+  --text: #dcdce8;
+  --bright: #e8e8f2;
+  --muted: #686878;
+  --coke: #d4d4e2;
+  --coke-dark: #b8b8c8;
+  --danger: #d46a74;
+  --radius: 0;
+}

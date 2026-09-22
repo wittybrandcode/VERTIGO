@@ -1,0 +1,12 @@
+/* VERTIGO debug drawer — call log (gray/white/wine). */
+#sec-debug { margin: 0 12px 8px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; }
+#sec-debug .row { margin-bottom: 6px; }
+#vrt-log {
+  list-style: none; max-height: 120px; overflow-y: auto;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 6px 8px; font: 10px/1.6 ui-monospace, Consolas, monospace;
+}
+#vrt-log li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#vrt-log li.lg-call { color: var(--muted); }
+#vrt-log li.lg-ok { color: var(--text); }
+#vrt-log li.lg-err { color: var(--danger); }
