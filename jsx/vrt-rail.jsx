@@ -19,6 +19,44 @@ function vrtRailSize(layer, w) {
     return sz.value;
 }
 
+/* Snapshot an existing rail so rebuild preserves everything:
+   position, orientation, tilts, and every VRT * slider by name.
+   New sliders absent in old rails simply keep their fresh defaults. */
+function vrtRailSnapshot(rail) {
+    var t = vrtTrans(rail, "rail");
+    var snap = { pos: vrtProp(t, "ADBE Position", "Position", "position").value.slice(), orient: vrtProp(t, "ADBE Orientation", "Orientation", "orientation").value.slice(), sliders: {} };
+    try { snap.rotx = vrtProp(t, "ADBE Rotate X", "X Rotation", "tilt").value; } catch (e0) {}
+    try { snap.rotz = vrtProp(t, "ADBE Rotate Z", "Rotation", "tilt").value; } catch (e1) {}
+    try {
+        var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects");
+        var i;
+        for (i = 1; i <= fx.numProperties; i++) {
+            var e = fx.property(i);
+            if (e.name.indexOf("VRT ") === 0) {
+                snap.sliders[e.name] = vrtProp(e, "ADBE Slider Control-0001", "Slider", "slider").value;
+            }
+        }
+    } catch (e2) {}
+    return snap;
+}
+
+function vrtRailRestore(rail, snap) {
+    if (snap === null || snap === undefined) { return; }
+    var t = vrtTrans(rail, "rail");
+    vrtProp(t, "ADBE Position", "Position", "position").setValue([snap.pos[0], snap.pos[1], snap.pos[2]]);
+    vrtProp(t, "ADBE Orientation", "Orientation", "orientation").setValue([snap.orient[0], snap.orient[1], snap.orient[2]]);
+    if (snap.rotx !== undefined) { try { vrtProp(t, "ADBE Rotate X", "X Rotation", "tilt").setValue(snap.rotx); } catch (e0) {} }
+    if (snap.rotz !== undefined) { try { vrtProp(t, "ADBE Rotate Z", "Rotation", "tilt").setValue(snap.rotz); } catch (e1) {} }
+    var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects");
+    var i;
+    for (i = 1; i <= fx.numProperties; i++) {
+        var e = fx.property(i);
+        if (snap.sliders[e.name] !== undefined) {
+            vrtProp(e, "ADBE Slider Control-0001", "Slider", "slider").setValue(snap.sliders[e.name]);
+        }
+    }
+}
+
 function vrtRailBuild() {
     app.beginUndoGroup("VERTIGO: Rail");
     try {
@@ -28,7 +66,11 @@ function vrtRailBuild() {
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
         vrtUnlocked(cam, "camera");
         var old = vrtRailLayer(comp);
-        if (old !== null) { old.remove(); }
+        var keep = null;
+        if (old !== null) {
+            try { keep = vrtRailSnapshot(old); } catch (eK) { keep = null; }
+            old.remove();
+        }
         var rail = comp.layers.addShape();
         rail.name = "VRT_Rail";
         rail.threeDLayer = true;
@@ -41,9 +83,14 @@ function vrtRailBuild() {
         vrtRailSlider(rail, "VRT Height", 0);
         vrtRailSlider(rail, "VRT Orbit", 0);
         vrtRailSlider(rail, "VRT T0", 0);
-        /* Default mood: flat orbit floor, start-point tuned (user-verified). */
-        vrtProp(vrtTrans(rail, "rail"), "ADBE Orientation", "Orientation", "orientation on rail").setValue([270, 0, 90]);
-        var sz0 = vrtRailSize(rail, 2500);
+        vrtRailRestore(rail, keep);
+        if (keep === null) {
+            /* Default mood (fresh rails only): flat orbit floor, start-point tuned. */
+            vrtProp(vrtTrans(rail, "rail"), "ADBE Orientation", "Orientation", "orientation on rail").setValue([270, 0, 90]);
+        }
+        var wNow = 2500;
+        if (keep !== null && keep.sliders && keep.sliders["VRT Width"] !== undefined) { wNow = keep.sliders["VRT Width"]; }
+        var sz0 = vrtRailSize(rail, wNow);
         var camPos = vrtProp(vrtTrans(cam, "camera"), "ADBE Position", "Position", "position on camera");
         if (camPos.numKeys > 0) { return vrtResp(false, "", "camera position has keyframes - remove first"); }
         camPos.expression =
