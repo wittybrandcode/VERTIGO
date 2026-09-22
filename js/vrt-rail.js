@@ -14,15 +14,15 @@
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz }; } catch (e) {}
-      setRailPair('rail-width', r.width); setRailPair('rail-prog', r.prog); setRailPair('rail-height', r.height); setRailPair('rail-tiltx', r.tiltx); setRailPair('rail-tiltz', r.tiltz);
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit }; } catch (e) {}
+      setRailPair('rail-width', r.width); setRailPair('rail-prog', r.prog); setRailPair('rail-height', r.height); setRailPair('rail-tiltx', r.tiltx); setRailPair('rail-tiltz', r.tiltz); setRailPair('rail-orbit', r.orbit);
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
       if (!silent) { window.VRT.status('✓ rail', 'ok'); }
     });
   }
 
   function railInit($) {
-    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
+    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
       var rid = document.getElementById(pair[0] + 'r');
       var nid = document.getElementById(pair[0]);
       function sendRail(quiet) {
@@ -68,6 +68,19 @@
         window.VRT.status('…', 'working');
         window.VRT.callJSX('vrtRailPlane', [pair[1]], function (r) {
           window.VRT.busy(pb, false);
+          window.VRT.status(r.ok ? ('✓ ' + (r.msg || 'done')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    });
+    [['btn-motion-run', 'vrtMotionOrbitStart'], ['btn-motion-stop', 'vrtMotionOrbitStop']].forEach(function (pair) {
+      var mb = $(pair[0]);
+      if (!mb) { if (window.console) { console.warn('VERTIGO: missing #' + pair[0]); } return; }
+      mb.addEventListener('click', function () {
+        window.VRT.busy(mb, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX(pair[1], [], function (r) {
+          window.VRT.busy(mb, false);
+          if (r.ok) { refreshRail(true); }
           window.VRT.status(r.ok ? ('✓ ' + (r.msg || 'done')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
       });

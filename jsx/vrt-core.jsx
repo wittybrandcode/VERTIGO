@@ -96,6 +96,14 @@ function vrtUnlocked(layer, ctx) {
     if (locked) { throw new Error(ctx + " is locked - unlock the layer first"); }
 }
 
+/* Rail shape by fixed name. Shared like vrtFindCam: rail + motion modules use it. */
+function vrtRailLayer(comp) {
+    var L = null;
+    try { L = comp.layers.byName("VRT_Rail"); } catch (e) { L = null; }
+    if (L === null || L === undefined) { return null; }
+    return L;
+}
+
 /* Linked camera: selected camera first, else VRT_Cam, else none. No stored state.
    Lives in core: camera, track and rail modules all resolve through it. */
 function vrtFindCam(comp) {

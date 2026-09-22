@@ -4,13 +4,6 @@
 /* F2 rail: a 3D circle shape (VRT_Rail) the camera orbits via one expression.
    Width slider drives BOTH the visible ellipse and the orbit math (one source).
    Progress 0-100 = one full turn. Height = camera float above the plane. */
-function vrtRailLayer(comp) {
-    var L = null;
-    try { L = comp.layers.byName("VRT_Rail"); } catch (e) { L = null; }
-    if (L === null || L === undefined) { return null; }
-    return L;
-}
-
 function vrtRailSlider(layer, name, val) {
     var fx = vrtProp(layer, "ADBE Effect Parade", "Effects", "effects on rail");
     var ctl = fx.addProperty("ADBE Slider Control");
@@ -46,6 +39,8 @@ function vrtRailBuild() {
         vrtRailSlider(rail, "VRT Width", 2500);
         vrtRailSlider(rail, "VRT Prog", 0);
         vrtRailSlider(rail, "VRT Height", 0);
+        vrtRailSlider(rail, "VRT Orbit", 0);
+        vrtRailSlider(rail, "VRT T0", 0);
         /* Default mood: flat orbit floor, start-point tuned (user-verified). */
         vrtProp(vrtTrans(rail, "rail"), "ADBE Orientation", "Orientation", "orientation on rail").setValue([270, 0, 90]);
         var sz0 = vrtRailSize(rail, 2500);
@@ -56,7 +51,9 @@ function vrtRailBuild() {
             'var w = rail.effect("VRT Width")("ADBE Slider Control-0001");' +
             'var p = rail.effect("VRT Prog")("ADBE Slider Control-0001");' +
             'var h = rail.effect("VRT Height")("ADBE Slider Control-0001");' +
-            'var a = p/100*2*Math.PI;' +
+            'var spd = rail.effect("VRT Orbit")("ADBE Slider Control-0001");' +
+            'var t0 = rail.effect("VRT T0")("ADBE Slider Control-0001");' +
+            'var a = (p/100 + spd*(time - t0)/360)*2*Math.PI;' +
             'var r = w/2;' +
             'var pt = rail.toWorld([r*Math.cos(a), r*Math.sin(a), 0]);' +
             '[pt[0], pt[1]+h, pt[2]];';
@@ -113,7 +110,7 @@ function vrtRailGet() {
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
         var rp = vrtProp(vrtTrans(rail, "rail"), "ADBE Position", "Position", "position on rail").value;
-        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"]];
+        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"]];
         var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects on rail");
         var got = {};
         var i, j;
@@ -123,12 +120,12 @@ function vrtRailGet() {
                 if (e.name === want[j][1]) { got[want[j][0]] = vrtProp(e, "ADBE Slider Control-0001", "Slider", "rail slider").value; }
             }
         }
-        if (got.width === undefined || got.prog === undefined || got.height === undefined) { return vrtResp(false, "", "rebuild rail"); }
+        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined) { return vrtResp(false, "", "rebuild rail"); }
         var rt = vrtTrans(rail, "rail");
         var txv = vrtProp(rt, "ADBE Rotate X", "X Rotation", "tilt X").value;
         var tzv = vrtProp(rt, "ADBE Rotate Z", "Rotation", "tilt Z").value;
         return '{"ok":true,"x":' + rp[0] + ',"y":' + rp[1] + ',"z":' + rp[2] +
-            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + tzv + '}';
+            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + tzv + ',"orbit":' + got.orbit + '}';
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
 }
 

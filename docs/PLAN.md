@@ -31,13 +31,14 @@ VERTIGO/
 │   ├── vrt-camera.jsx       # Ensure/Link/Get/Set + جدول الخصائص
 │   ├── vrt-track.jsx        # Set/Clear/Status
 │   ├── vrt-rail.jsx         # Build/Set/Get/Clear/Look/Focus/Plane + أدوات الشكل
-│   └── vrt.jsx                # 4 سطور #include — نقطة الدخول الوحيدة
+│   ├── vrt-motion.jsx       # محرك الحركة الإجرائية: نمط Start/Stop + ساعة T0 المشتركة
+│   └── vrt.jsx                # 5 سطور #include — نقطة الدخول الوحيدة
 ├── icons/  README.md  .debug(dev)  docs/USER-GUIDE.md
 ```
 
 ## 2. سياسة الإغلاق (Freeze)
 
-1. **API مجمد**: الدوال بتوقيعاتها — إضافة فقط، الكسر = نسخة رئيسية. المصافحة `vrtApiVersion()=1` تُفحص عند كل فتح.
+1. **API مجمد**: الدوال بتوقيعاتها — إضافة فقط (`vrtMotionOrbitStart/Stop` مثال)، الكسر = نسخة رئيسية. المصافحة `vrtApiVersion()=1` تُفحص عند كل فتح.
 2. **النسخة مجمدة على v1.0** بقرار المالك — لا رفع حتى نسخة ثابتة تماماً.
 3. **التوكنز مجمدة**: أي لون جديد بتبرير موثق.
 4. **الملكية**: كل وحدة JSX تملك طبقاتها/تعبيراتها — واللوحة المدخل الوحيد للكتابة.
