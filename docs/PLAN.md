@@ -19,7 +19,13 @@ VERTIGO/
 │   └── panel.css            # @import بالترتيب أعلاه فقط — عقد التتالي
 ├── js/
 │   ├── CSInterface.js       # vendor — ممنوع اللمس
-│   └── main.js              # الجسر + الربط العام + اللقطات (يبقى ملفاً واحداً الآن)
+│   ├── vrt-bridge.js        # البيئة + evalScript + الحالة (يسجل window.VRT)
+│   ├── vrt-log.js           # السجل + الدرج + النسخ
+│   ├── vrt-cam.js           # الزوايا + الحقول + القراءة/الكتابة + Build/Link/Read
+│   ├── vrt-track.js         # الشريط + Track/Untrack + عرض الاسم
+│   ├── vrt-rail.js          # سلايدرات + أزرار الحلقة الستة + المزامنة
+│   ├── vrt-reset.js         # لقطات + ↺ فردي/جماعي
+│   └── vrt.js               # المنسق فقط: inits بالترتيب (لا منطق فيه)
 ├── jsx/
 │   ├── vrt-core.jsx         # مساعدات مشتركة فقط
 │   ├── vrt-camera.jsx       # Ensure/Link/Get/Set + جدول الخصائص
