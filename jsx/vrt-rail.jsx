@@ -123,7 +123,7 @@ function vrtRailSet(param, valueS) {
         var i, found = null;
         for (i = 1; i <= fx.numProperties; i++) {
             var e = fx.property(i);
-            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ")) { found = e; break; }
+            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit")) { found = e; break; }
         }
         if (found === null) { return vrtResp(false, "", "rebuild rail"); }
         if (param === "width") {

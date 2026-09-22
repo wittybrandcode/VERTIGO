@@ -54,7 +54,12 @@ function vrtRailDiag() {
                 if (zEx2.indexOf("VRT TiltZ") >= 0) { zt = "turntable"; }
                 else if (zEx2 !== "") { zt = "custom"; }
             } catch (eZT) {}
-            out[out.length] = "railZ:" + zt;
+            var zer = "";
+            try {
+                var zPe = vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin");
+                try { zer = zPe.expressionError; } catch (eZE) { zer = ""; }
+            } catch (eZF) {}
+            out[out.length] = "railZ:" + zt + (zer !== "" ? " ERR:" + zer : "");
         }
         var cam = vrtFindCam(comp);
         out[out.length] = "cam:" + (cam === null ? "NONE" : cam.name);
@@ -66,7 +71,9 @@ function vrtRailDiag() {
             if (ex.indexOf("toWorld([r,0,0])") >= 0) { tag = "current"; }
             else if (ex.indexOf("VRT_Rail") >= 0) { tag = "OLD-TEMPLATE"; }
             else if (ex !== "") { tag = "custom"; }
-            out[out.length] = "posExpr:" + tag;
+            var cer = "";
+            try { cer = cp.expressionError; } catch (eCE) { cer = ""; }
+            out[out.length] = "posExpr:" + tag + (cer !== "" ? " ERR:" + cer : "");
             out[out.length] = "keys:" + cp.numKeys;
             out[out.length] = "time:" + comp.time;
         }
