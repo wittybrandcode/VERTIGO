@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="6.0"
+  ExtensionBundleId="com.vertigo.panel" ExtensionBundleVersion="1.0.0"
+  ExtensionBundleName="VERTIGO" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ExtensionList>
+    <Extension Id="com.vertigo.panel" Version="1.0"/>
+  </ExtensionList>
+  <ExecutionEnvironment>
+    <HostList>
+      <Host Name="AEFT" Version="[15.0,99.9]"/>
+    </HostList>
+    <LocaleList><Locale Code="All"/></LocaleList>
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="6.0"/>
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  <DispatchInfoList>
+    <Extension Id="com.vertigo.panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/hostscript.jsx</ScriptPath>
+        </Resources>
+        <Lifecycle><AutoVisible>true</AutoVisible></Lifecycle>
+        <UI>
+          <Type>Panel</Type><Menu>VERTIGO</Menu>
+          <Geometry><Size><Height>620</Height><Width>320</Width></Size></Geometry>
+          <Icons>
+            <Icon Type="Normal">./icons/vrt-normal.png</Icon>
+            <Icon Type="RollOver">./icons/vrt-rollover.png</Icon>
+            <Icon Type="DarkNormal">./icons/vrt-dark.png</Icon>
+            <Icon Type="DarkRollOver">./icons/vrt-dark-roll.png</Icon>
+          </Icons>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>
