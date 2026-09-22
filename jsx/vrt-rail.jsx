@@ -4,13 +4,6 @@
 /* F2 rail: a 3D circle shape (VRT_Rail) the camera orbits via one expression.
    Width slider drives BOTH the visible ellipse and the orbit math (one source).
    Progress 0-100 = one full turn. Height = camera float above the plane. */
-function vrtRailSlider(layer, name, val) {
-    var fx = vrtProp(layer, "ADBE Effect Parade", "Effects", "effects on rail");
-    var ctl = fx.addProperty("ADBE Slider Control");
-    ctl.name = name;
-    vrtProp(ctl, "ADBE Slider Control-0001", "Slider", "rail slider").setValue(val);
-}
-
 function vrtRailSize(layer, w) {
     var root = vrtProp(layer, "ADBE Root Vectors Group", "Contents", "shape contents");
     var sz = vrtFindMatch(root, "ADBE Vector Ellipse Size", "Size");
@@ -78,11 +71,11 @@ function vrtRailBuild() {
         vrtProp(vrtTrans(rail, "rail"), "ADBE Position", "Position", "position on rail").setValue([comp.width / 2, comp.height / 2, 0]);
         var root = vrtProp(rail, "ADBE Root Vectors Group", "Contents", "shape contents");
         root.addProperty("ADBE Vector Shape - Ellipse");
-        vrtRailSlider(rail, "VRT Width", 2500);
-        vrtRailSlider(rail, "VRT Prog", 0);
-        vrtRailSlider(rail, "VRT Height", 0);
-        vrtRailSlider(rail, "VRT Orbit", 0);
-        vrtRailSlider(rail, "VRT T0", 0);
+        vrtAddSlider(rail, "VRT Width", 2500);
+        vrtAddSlider(rail, "VRT Prog", 0);
+        vrtAddSlider(rail, "VRT Height", 0);
+        vrtAddSlider(rail, "VRT Orbit", 0);
+        vrtAddSlider(rail, "VRT T0", 0);
         vrtRailRestore(rail, keep);
         if (keep === null) {
             /* Default mood (fresh rails only): flat orbit floor, start-point tuned. */
@@ -93,17 +86,7 @@ function vrtRailBuild() {
         var sz0 = vrtRailSize(rail, wNow);
         var camPos = vrtProp(vrtTrans(cam, "camera"), "ADBE Position", "Position", "position on camera");
         if (camPos.numKeys > 0) { return vrtResp(false, "", "camera position has keyframes - remove first"); }
-        camPos.expression =
-            'var rail = thisComp.layer("VRT_Rail");' +
-            'var w = rail.effect("VRT Width")("ADBE Slider Control-0001");' +
-            'var p = rail.effect("VRT Prog")("ADBE Slider Control-0001");' +
-            'var h = rail.effect("VRT Height")("ADBE Slider Control-0001");' +
-            'var spd = rail.effect("VRT Orbit")("ADBE Slider Control-0001");' +
-            'var t0 = rail.effect("VRT T0")("ADBE Slider Control-0001");' +
-            'var a = (p/100 + spd*(time - t0)/360)*2*Math.PI;' +
-            'var r = w/2;' +
-            'var pt = rail.toWorld([r*Math.cos(a), r*Math.sin(a), 0]);' +
-            '[pt[0], pt[1]+h, pt[2]];';
+        camPos.expression = vrtRailCamExpr();
         return vrtResp(true, "rail built (" + Math.round(sz0[0]) + ")", "");
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
     finally { app.endUndoGroup(); }

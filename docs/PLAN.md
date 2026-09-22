@@ -31,8 +31,8 @@ VERTIGO/
 │   ├── vrt-camera.jsx       # Ensure/Link/Get/Set + جدول الخصائص
 │   ├── vrt-track.jsx        # Set/Clear/Status
 │   ├── vrt-rail.jsx         # Build/Set/Get/Clear/Look/Focus/Plane + أدوات الشكل
-│   ├── vrt-motion.jsx       # محرك الحركة الإجرائية: نمط Start/Stop + ساعة T0 المشتركة
-│   └── vrt.jsx                # 5 سطور #include — نقطة الدخول الوحيدة
+│   ├── vrt-motion.jsx       # محرك الحركة: Start/Stop + Diag + ساعة T0 المشتركة
+│   └── vrt.jsx                # 6 سطور #include — نقطة الدخول الوحيدة
 ├── icons/  README.md  .debug(dev)  docs/USER-GUIDE.md
 ```
 

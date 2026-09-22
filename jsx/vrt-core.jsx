@@ -96,6 +96,22 @@ function vrtUnlocked(layer, ctx) {
     if (locked) { throw new Error(ctx + " is locked - unlock the layer first"); }
 }
 
+/* Add a named slider if missing, else return existing value handle.
+   Generic like vrtFindCam: rail + motion modules use it. */
+function vrtAddSlider(layer, name, val) {
+    var fx = vrtProp(layer, "ADBE Effect Parade", "Effects", "effects");
+    var i;
+    for (i = 1; i <= fx.numProperties; i++) {
+        var e = fx.property(i);
+        if (e.name === name) { return vrtProp(e, "ADBE Slider Control-0001", "Slider", "slider"); }
+    }
+    var ctl = fx.addProperty("ADBE Slider Control");
+    ctl.name = name;
+    var sp = vrtProp(ctl, "ADBE Slider Control-0001", "Slider", "slider");
+    sp.setValue(val);
+    return sp;
+}
+
 /* Rail shape by fixed name. Shared like vrtFindCam: rail + motion modules use it. */
 function vrtRailLayer(comp) {
     var L = null;

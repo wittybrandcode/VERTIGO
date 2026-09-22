@@ -85,7 +85,7 @@
         });
       });
     });
-    [['btn-rail-clear', 'vrtRailClear'], ['btn-rail-look', 'vrtRailLook'], ['btn-rail-focus', 'vrtRailFocus']].forEach(function (pair) {
+    [['btn-rail-clear', 'vrtRailClear'], ['btn-rail-look', 'vrtRailLook'], ['btn-rail-focus', 'vrtRailFocus'], ['btn-rail-diag', 'vrtRailDiag']].forEach(function (pair) {
       var b = $(pair[0]);
       if (!b) { if (window.console) { console.warn('VERTIGO: missing #' + pair[0]); } return; }
       b.addEventListener('click', function () {
