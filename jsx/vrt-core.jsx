@@ -84,6 +84,18 @@ function vrtFindMatch(group, matchName, displayName) {
     return found;
 }
 
+/* Frozen API version. Panel checks it on open; mismatch = stale files. */
+function vrtApiVersion() {
+    return '{"ok":true,"api":1}';
+}
+
+/* Locked layers fail writes with generic errors — name it instead. */
+function vrtUnlocked(layer, ctx) {
+    var locked = false;
+    try { locked = layer.locked; } catch (e) { locked = false; }
+    if (locked) { throw new Error(ctx + " is locked - unlock the layer first"); }
+}
+
 /* Linked camera: selected camera first, else VRT_Cam, else none. No stored state.
    Lives in core: camera, track and rail modules all resolve through it. */
 function vrtFindCam(comp) {

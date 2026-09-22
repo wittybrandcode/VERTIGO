@@ -18,6 +18,7 @@ function vrtTrackSet() {
         }
         if (L === null) { return vrtResp(false, "", "select a subject layer first"); }
         if (L === cam || L.name === cam.name) { return vrtResp(false, "", "select a subject layer, not the camera"); }
+        vrtUnlocked(cam, "camera");
         var q = vrtEsc(L.name);
         var wpos = 'thisComp.layer("' + q + '").toWorld(thisComp.layer("' + q + '").transform.anchorPoint)';
         var t = vrtTrans(cam, "camera");
@@ -45,6 +46,7 @@ function vrtTrackClear() {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var cam = vrtFindCam(comp);
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
+        vrtUnlocked(cam, "camera");
         var t = vrtTrans(cam, "camera");
         vrtProp(t, "ADBE Interest", "Point of Interest", "POI").expression = "";
         var opts = vrtProp(cam, "ADBE Camera Options Group", "Camera Options", "camera options");

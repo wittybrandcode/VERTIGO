@@ -14,4 +14,13 @@
   window.VRT.trackInit(function (id) { return document.getElementById(id); });
   window.VRT.railInit(function (id) { return document.getElementById(id); });
   window.VRT.resetInit();
+  /* Frozen API handshake (live AE only): panel v1 expects JSX api 1. */
+  if (live) {
+    window.VRT.callJSX('vrtApiVersion', [], function (r) {
+      if (!r.ok || r.api !== 1) {
+        window.VRT.status('! panel/jsx mismatch — reopen panel', 'err');
+        window.VRT.log('err', 'API mismatch: expected 1');
+      }
+    });
+  }
 })();

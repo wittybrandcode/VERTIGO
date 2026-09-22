@@ -53,6 +53,7 @@ function vrtCamEnsure() {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var cam = vrtFindCam(comp);
         if (cam !== null) {
+            vrtUnlocked(cam, "camera");
             vrtCleanExpr(cam);
             var chkPos = vrtProp(vrtTrans(cam, "camera"), "ADBE Position", "Position", "position");
             var chkEx = "";
@@ -77,6 +78,7 @@ function vrtCamLink() {
         var i;
         for (i = 0; i < sel.length; i++) {
             if (sel[i].matchName === "ADBE Camera Layer") {
+                vrtUnlocked(sel[i], "camera");
                 vrtCleanExpr(sel[i]);
                 return vrtResp(true, "linked: " + vrtEsc(sel[i].name), "");
             }
@@ -129,6 +131,7 @@ function vrtCamSet(prop, aS, bS, cS) {
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
         var def = vrtCamDef(prop);
         if (def === null) { return vrtResp(false, "", "unknown property: " + prop); }
+        vrtUnlocked(cam, "camera");
         var base = (def[0] === "T") ? vrtTrans(cam, "camera") : vrtProp(cam, "ADBE Camera Options Group", "Camera Options", "camera options");
         var p = vrtProp(base, def[1], def[2], prop);
         var curEx = "";

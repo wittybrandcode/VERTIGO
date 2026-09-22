@@ -33,6 +33,7 @@ function vrtRailBuild() {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var cam = vrtFindCam(comp);
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
+        vrtUnlocked(cam, "camera");
         var old = vrtRailLayer(comp);
         if (old !== null) { old.remove(); }
         var rail = comp.layers.addShape();
@@ -70,6 +71,7 @@ function vrtRailSet(param, valueS) {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
+        vrtUnlocked(rail, "rail");
         var v = parseFloat(valueS);
         if (!(v > 0 || v < 0)) { v = 0; }
         if (param === "x" || param === "y" || param === "z") {
@@ -137,6 +139,7 @@ function vrtRailClear() {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var cam = vrtFindCam(comp);
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
+        vrtUnlocked(cam, "camera");
         var camPos = vrtProp(vrtTrans(cam, "camera"), "ADBE Position", "Position", "position on camera");
         var ex = "";
         try { ex = camPos.expression; } catch (e0) { ex = ""; }
@@ -170,6 +173,7 @@ function vrtRailLook() {
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
+        vrtUnlocked(cam, "camera");
         var poiP = vrtProp(vrtTrans(cam, "camera"), "ADBE Interest", "Point of Interest", "POI");
         var ex = "";
         try { ex = poiP.expression; } catch (e0) { ex = ""; }
@@ -193,6 +197,7 @@ function vrtRailPlane(which) {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
+        vrtUnlocked(rail, "rail");
         var o = null;
         if (which === "floor") { o = [270, 0, 90]; }
         else if (which === "wall") { o = [0, 0, 0]; }
@@ -214,6 +219,7 @@ function vrtRailFocus() {
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
+        vrtUnlocked(cam, "camera");
         var fd = vrtProp(vrtProp(cam, "ADBE Camera Options Group", "Camera Options", "camera options"), "ADBE Camera Focus Distance", "Focus Distance", "focus");
         var ex = "";
         try { ex = fd.expression; } catch (e0) { ex = ""; }
