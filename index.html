@@ -99,6 +99,19 @@
         </div>
       </div>
     </details>
+
+    <details class="camgroup">
+      <summary>TRAVEL<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <div class="camrows">
+        <div class="row prow"><span class="w">Size</span><input id="rail-wamtr" type="range" min="-1000" max="1000" step="10" value="0" title="Travel amount px (0 = still)"><input id="rail-wamt" type="number" step="10" value="0" title="Travel amount px (0 = still)"></div>
+        <div class="row prow"><span class="w">Start</span><input id="rail-w0" type="number" step="0.5" value="0" title="Travel start (sec, auto on Run)"></div>
+        <div class="row prow"><span class="w">End</span><input id="rail-w1" type="number" step="0.5" value="0" title="Travel end (sec, 0 = endless wobble)"></div>
+        <div class="row">
+          <button class="ibtn" id="btn-travel-dir" title="Travel direction: grow or shrink first"><span class="g">±</span><span class="w" id="travel-dir-word">Grow</span></button>
+          <button class="ibtn" id="btn-travel-mode" title="Travel basis: Rate (wobble/sec) or Span (ramp over Start–End)"><span class="g">⇄</span><span class="w" id="travel-mode-word">Rate</span></button>
+        </div>
+      </div>
+    </details>
   </main>
 
   <section id="sec-debug" hidden aria-label="Debug log">

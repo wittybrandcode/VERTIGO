@@ -127,11 +127,40 @@ function vrtTurntableExpr() {
         'tilt + prog/100*360 + trn*360*frac;';
 }
 
+/* Travel delta, single source for Size + radius: p="" on rail, "rail." on camera. Leaves wdt. */
+function vrtTravelDelta(p) {
+    return 'var s0 = ' + p + 'effect("VRT W0")("ADBE Slider Control-0001");' +
+        'var s1 = ' + p + 'effect("VRT W1")("ADBE Slider Control-0001");' +
+        'var wamt = ' + p + 'effect("VRT WAmt")("ADBE Slider Control-0001");' +
+        'var wdir = ' + p + 'effect("VRT WDir")("ADBE Slider Control-0001");' +
+        'var wmode = ' + p + 'effect("VRT WMode")("ADBE Slider Control-0001");' +
+        'var wsg = (wdir >= 0) ? 1 : -1;' +
+        'var wdt = 0;' +
+        'if (time >= s0) {' +
+        'if (wmode > 0.5) {' +
+        'var wspan = (s1 > 0 && s1 > s0) ? (s1 - s0) : 0;' +
+        'if (wspan > 0) {wdt = wsg*wamt*(Math.min(time, s1) - s0)/wspan;}' +
+        '} else {' +
+        'var wph = (time - s0) % 2;' +
+        'var wleg = (wph < 1) ? wph : 2 - wph;' +
+        'wdt = wsg*wamt*wleg;' +
+        '}' +
+        '}';
+}
+
+function vrtTravelSizeExpr() {
+    return vrtTravelDelta("") +
+        'var wb = effect("VRT Width")("ADBE Slider Control-0001");' +
+        'var ww = Math.max(wb + wdt, 1);' +
+        '[ww, ww];';
+}
+
 function vrtRailCamExpr() {
     return 'var rail = thisComp.layer("VRT_Rail");' +
         'var w = rail.effect("VRT Width")("ADBE Slider Control-0001");' +
+        vrtTravelDelta("rail.") +
         'var h = rail.effect("VRT Height")("ADBE Slider Control-0001");' +
-        'var r = w/2;' +
+        'var r = Math.max(w + wdt, 1)/2;' +
         'var pt = rail.toWorld([r,0,0]);' +
         '[pt[0], pt[1]+h, pt[2]];';
 }

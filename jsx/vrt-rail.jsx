@@ -4,12 +4,29 @@
 /* F2 rail: a 3D circle shape (VRT_Rail) the camera orbits via one expression.
    Width slider drives BOTH the visible ellipse and the orbit math (one source).
    Progress 0-100 = one full turn. Height = camera float above the plane. */
-function vrtRailSize(layer, w) {
-    var root = vrtProp(layer, "ADBE Root Vectors Group", "Contents", "shape contents");
+/* Ellipse Size is expression-driven (Width + travel delta), never static.
+   Refuses a custom Size expression instead of silently overwriting it. */
+function vrtRailSizeExpr(rail) {
+    var root = vrtProp(rail, "ADBE Root Vectors Group", "Contents", "shape contents");
     var sz = vrtFindMatch(root, "ADBE Vector Ellipse Size", "Size");
     if (sz === null) { throw new Error("missing ellipse size"); }
-    sz.setValue([w, w]);
-    return sz.value;
+    var ex = "";
+    try { ex = sz.expression; } catch (e0) { ex = ""; }
+    if (ex.indexOf("VRT WAmt") < 0) {
+        if (ex !== "") { throw new Error("ellipse Size has custom expression - clear it first"); }
+        sz.expression = vrtTravelSizeExpr();
+    }
+    return true;
+}
+
+/* Travel rig: 5 sliders + live Size expression. Called by Build/Run/Stop. */
+function vrtTravelEnsure(rail) {
+    vrtAddSlider(rail, "VRT W0", 0);
+    vrtAddSlider(rail, "VRT W1", 0);
+    vrtAddSlider(rail, "VRT WAmt", 0);
+    vrtAddSlider(rail, "VRT WDir", 1);
+    vrtAddSlider(rail, "VRT WMode", 0);
+    vrtRailSizeExpr(rail);
 }
 
 /* Snapshot an existing rail so rebuild preserves everything:
@@ -83,17 +100,17 @@ function vrtRailBuild() {
         vrtAddSlider(rail, "VRT TiltZ", tiltInit);
         vrtRailRestore(rail, keep);
         vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin").expression = vrtTurntableExpr();
+        vrtTravelEnsure(rail);
         if (keep === null) {
             /* Default mood (fresh rails only): flat orbit floor, start-point tuned. */
             vrtProp(vrtTrans(rail, "rail"), "ADBE Orientation", "Orientation", "orientation on rail").setValue([270, 0, 90]);
         }
         var wNow = 2500;
         if (keep !== null && keep.sliders && keep.sliders["VRT Width"] !== undefined) { wNow = keep.sliders["VRT Width"]; }
-        var sz0 = vrtRailSize(rail, wNow);
         var camPos = vrtProp(vrtTrans(cam, "camera"), "ADBE Position", "Position", "position on camera");
         if (camPos.numKeys > 0) { return vrtResp(false, "", "camera position has keyframes - remove first"); }
         camPos.expression = vrtRailCamExpr();
-        return vrtResp(true, "rail built (" + Math.round(sz0[0]) + ")", "");
+        return vrtResp(true, "rail built (" + Math.round(wNow) + ")", "");
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
     finally { app.endUndoGroup(); }
 }
@@ -125,12 +142,11 @@ function vrtRailSet(param, valueS) {
         var i, found = null;
         for (i = 1; i <= fx.numProperties; i++) {
             var e = fx.property(i);
-            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode")) { found = e; break; }
+            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode")) { found = e; break; }
         }
         if (found === null) { return vrtResp(false, "", "rebuild rail"); }
         if (param === "width") {
             if (v < 100) { v = 100; }
-            vrtRailSize(rail, v);
         }
         vrtProp(found, "ADBE Slider Control-0001", "Slider", "rail slider").setValue(v);
         return vrtResp(true, "live", "");
@@ -145,7 +161,7 @@ function vrtRailGet() {
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
         var rp = vrtProp(vrtTrans(rail, "rail"), "ADBE Position", "Position", "position on rail").value;
-        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"]];
+        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"], ["wamt", "VRT WAmt"], ["w0", "VRT W0"], ["w1", "VRT W1"], ["wdir", "VRT WDir"], ["wmode", "VRT WMode"]];
         var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects on rail");
         var got = {};
         var i, j;
@@ -155,11 +171,11 @@ function vrtRailGet() {
                 if (e.name === want[j][1]) { got[want[j][0]] = vrtProp(e, "ADBE Slider Control-0001", "Slider", "rail slider").value; }
             }
         }
-        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined) { return vrtResp(false, "", "rebuild rail"); }
+        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined || got.wamt === undefined || got.w0 === undefined || got.w1 === undefined || got.wdir === undefined || got.wmode === undefined) { return vrtResp(false, "", "rebuild rail"); }
         var rt = vrtTrans(rail, "rail");
         var txv = vrtProp(rt, "ADBE Rotate X", "X Rotation", "tilt X").value;
         return '{"ok":true,"x":' + rp[0] + ',"y":' + rp[1] + ',"z":' + rp[2] +
-            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + '}';
+            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + '}';
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
 }
 

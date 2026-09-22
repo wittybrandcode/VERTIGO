@@ -21,21 +21,37 @@
     if (onn) { onn.title = ot; }
   }
 
+  function syncTravelWords(dir, mode) {
+    var dw = document.getElementById('travel-dir-word');
+    if (dw) { dw.textContent = (dir >= 0) ? 'Grow' : 'Shrink'; }
+    var mw = document.getElementById('travel-mode-word');
+    if (mw) { mw.textContent = mode ? 'Span' : 'Rate'; }
+    var ot = mode ? 'Travel amount px over Start–End (0 = still)' : 'Travel amount px per wobble (0 = still)';
+    var tr = document.getElementById('rail-wamtr');
+    var tn = document.getElementById('rail-wamt');
+    if (tr) { tr.title = ot; }
+    if (tn) { tn.title = ot; }
+  }
+
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode }; } catch (e) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode }; } catch (e) {}
       try { window.vrtMotionMode = (r.mode > 0.5) ? 1 : 0; } catch (eM) {}
       syncModeWord(window.vrtMotionMode ? 1 : 0);
+      try { window.vrtTravelDir = (r.wdir < 0) ? -1 : 1; } catch (eD) {}
+      try { window.vrtTravelMode = (r.wmode > 0.5) ? 1 : 0; } catch (eTM) {}
+      syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, window.vrtTravelMode ? 1 : 0);
       setRailPair('rail-width', r.width); setRailPair('rail-prog', r.prog); setRailPair('rail-height', r.height); setRailPair('rail-tiltx', r.tiltx); setRailPair('rail-tiltz', r.tiltz); setRailPair('rail-orbit', r.orbit);
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
       setRailPair('rail-t0', r.t0); setRailPair('rail-t1', r.t1);
+      setRailPair('rail-wamt', r.wamt); setRailPair('rail-w0', r.w0); setRailPair('rail-w1', r.w1);
       if (!silent) { window.VRT.status('✓ rail', 'ok'); }
     });
   }
 
   function railInit($) {
-    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
+    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-wamt', 'wamt'], ['rail-w0', 'w0'], ['rail-w1', 'w1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
       var rid = document.getElementById(pair[0] + 'r');
       var nid = document.getElementById(pair[0]);
       function sendRail(quiet) {
@@ -112,6 +128,40 @@
             syncModeWord(nxt);
           }
           window.VRT.status(r.ok ? ('✓ ' + (nxt ? 'Count' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
+    var dirBtn = $('btn-travel-dir');
+    if (dirBtn) {
+      dirBtn.addEventListener('click', function () {
+        var nxtD = (window.vrtTravelDir === -1) ? 1 : -1;
+        window.VRT.busy(dirBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtRailSet', ['wdir', String(nxtD)], function (r) {
+          window.VRT.busy(dirBtn, false);
+          if (r.ok) {
+            window.vrtTravelDir = nxtD;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.wdir = nxtD; } } catch (eS) {}
+            syncTravelWords(nxtD, window.vrtTravelMode ? 1 : 0);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (nxtD >= 0 ? 'Grow' : 'Shrink')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
+    var tmodeBtn = $('btn-travel-mode');
+    if (tmodeBtn) {
+      tmodeBtn.addEventListener('click', function () {
+        var nxtT = window.vrtTravelMode ? 0 : 1;
+        window.VRT.busy(tmodeBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtRailSet', ['wmode', String(nxtT)], function (r) {
+          window.VRT.busy(tmodeBtn, false);
+          if (r.ok) {
+            window.vrtTravelMode = nxtT;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.wmode = nxtT; } } catch (eS2) {}
+            syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, nxtT);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (nxtT ? 'Span' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
       });
     }
