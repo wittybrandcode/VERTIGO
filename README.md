@@ -30,8 +30,8 @@ No rigs, no keyframes generated — direct control with full undo.
 ```
 CSXS/manifest.xml   extension manifest (CEP 6.0)
 index.html          panel UI (vanilla, no build step)
-js/                 CSInterface.js (vendor) + main.js (bridge)
-jsx/hostscript.jsx  ExtendScript ES3 — the whole AE side
+js/                 CSInterface.js (vendor) + vrt-*.js library (vrt.js entry)
+jsx/vrt.jsx         ExtendScript ES3 entry → vrt-core/camera/track/rail
 icons/              spiral mark, normal/hover/dark
 ```
 

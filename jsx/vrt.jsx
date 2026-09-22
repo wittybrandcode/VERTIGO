@@ -1,4 +1,4 @@
-/* VERTIGO hostscript.jsx — SOLE ENTRY POINT. Loads the library modules.
+/* VERTIGO vrt.jsx — SOLE ENTRY POINT. Loads the library modules.
  * Do not add logic here. Order matters: core first.
  * Modules: vrt-core (helpers) → vrt-camera → vrt-track → vrt-rail.
  * Every exposed function returns a '{"ok":...}' string, never throws outward. */

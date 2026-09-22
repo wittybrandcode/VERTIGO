@@ -1,5 +1,5 @@
 /* VERTIGO vrt-core.jsx — shared helpers ONLY. No AE mutations here.
- * Part of the VERTIGO library (loaded by hostscript.jsx).
+ * Part of the VERTIGO library (loaded by vrt.jsx).
  * WARNING: ExtendScript ES3 ONLY. Never use let/const, arrow functions,
  * Array.map/filter/forEach, JSON.parse/stringify, template literals,
  * nor run a modern formatter or TS language server over this file. */
