@@ -28,7 +28,7 @@ function vrtRailDiag() {
         var rail = vrtRailLayer(comp);
         out[out.length] = "rail:" + (rail === null ? "MISSING" : rail.name);
         if (rail !== null) {
-            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1", "VRT Mode", "VRT WAmt", "VRT W0", "VRT W1", "VRT WDir", "VRT WMode"];
+            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1", "VRT Mode", "VRT WAmt", "VRT W0", "VRT W1", "VRT WDir", "VRT WMode", "VRT WShape"];
             var fx = null;
             try { fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "fx"); } catch (eF) { fx = null; }
             var i, j;
@@ -82,8 +82,9 @@ function vrtRailDiag() {
                 var qS1 = vrtMotionSlider(rail, "VRT W1");
                 var qD = vrtMotionSlider(rail, "VRT WDir");
                 var qM = vrtMotionSlider(rail, "VRT WMode");
-                if (qW !== null && qA !== null && qS0 !== null && qS1 !== null && qD !== null && qM !== null) {
-                    var vW = qW.value, vA = qA.value, vS0 = qS0.value, vS1 = qS1.value, vM = qM.value;
+                var qSH = vrtMotionSlider(rail, "VRT WShape");
+                if (qW !== null && qA !== null && qS0 !== null && qS1 !== null && qD !== null && qM !== null && qSH !== null) {
+                    var vW = qW.value, vA = qA.value, vS0 = qS0.value, vS1 = qS1.value, vM = qM.value, vSH = qSH.value;
                     var vSg = (qD.value >= 0) ? 1 : -1;
                     var vDt = 0;
                     if (!(vA > 0 || vA < 0)) { tw = "still"; }
@@ -91,8 +92,13 @@ function vrtRailDiag() {
                     else if (vM > 0.5 && vS1 > 0 && vS1 > vS0 && comp.time > vS1) { vDt = vSg * vA; tw = "ended"; }
                     else {
                         tw = "running";
-                        if (vM > 0.5) { if (vS1 > 0 && vS1 > vS0) { vDt = vSg * vA * (Math.min(comp.time, vS1) - vS0) / (vS1 - vS0); } }
-                        else { var vPh = (comp.time - vS0) % 2; vDt = vSg * vA * ((vPh < 1) ? vPh : 2 - vPh); }
+                        if (vSH > 0.5) {
+                            if (vM > 0.5) { if (vS1 > 0 && vS1 > vS0) { var vFr = (Math.min(comp.time, vS1) - vS0) / (vS1 - vS0); var vPh2 = vFr * 2; vDt = vSg * vA * ((vPh2 < 1) ? vPh2 : 2 - vPh2); } }
+                            else { var vPh = (comp.time - vS0) % 2; vDt = vSg * vA * ((vPh < 1) ? vPh : 2 - vPh); }
+                        } else {
+                            if (vM > 0.5) { if (vS1 > 0 && vS1 > vS0) { vDt = vSg * vA * (Math.min(comp.time, vS1) - vS0) / (vS1 - vS0); } }
+                            else { vDt = vSg * vA * (comp.time - vS0); }
+                        }
                     }
                     wEff = Math.round((vW + vDt) * 10) / 10;
                 }
@@ -197,7 +203,7 @@ function vrtMotionOrbitStart() {
                 try { if (keepW0) { effS0 = w0b.value; } } catch (eES) {}
                 var wEnd = 0;
                 try { wEnd = w1b.value; } catch (eWE) { wEnd = 0; }
-                if (!(wEnd > 0 && wEnd > effS0)) { return vrtResp(false, "", "travel ramp needs End after Start"); }
+                if (!(wEnd > 0 && wEnd > effS0)) { return vrtResp(false, "", "travel span needs End after Start"); }
             }
         }
         if (keepT0) { return vrtResp(true, "scheduled — starts at T0", ""); }
@@ -231,7 +237,8 @@ function vrtMotionOrbitStop() {
         var w1P = vrtMotionSlider(rail, "VRT W1");
         var wdirP = vrtMotionSlider(rail, "VRT WDir");
         var wmodeP = vrtMotionSlider(rail, "VRT WMode");
-        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null || widthP === null || wamtP === null || w0P === null || w1P === null || wdirP === null || wmodeP === null) { return vrtResp(false, "", "rebuild rail"); }
+        var wshpP = vrtMotionSlider(rail, "VRT WShape");
+        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null || widthP === null || wamtP === null || w0P === null || w1P === null || wdirP === null || wmodeP === null || wshpP === null) { return vrtResp(false, "", "rebuild rail"); }
         var amtW = 0;
         try { amtW = wamtP.value; } catch (eAW) { amtW = 0; }
         var amtWOn = (amtW > 0 || amtW < 0);
@@ -247,19 +254,28 @@ function vrtMotionOrbitStop() {
         if (amtWOn) {
             var wsgW = 1;
             try { if (wdirP.value < 0) { wsgW = -1; } } catch (eWD) {}
-            var s0W = 0, s1W = 0, wmW = 0, baseW = 0;
+            var s0W = 0, s1W = 0, wmW = 0, shpW = 1, baseW = 0;
             try { s0W = w0P.value; } catch (eS0) {}
             try { s1W = w1P.value; } catch (eS1) {}
             try { wmW = wmodeP.value; } catch (eWM) {}
+            try { shpW = wshpP.value; } catch (eSH) {}
             try { baseW = widthP.value; } catch (eBW) {}
             var wdtW = 0;
             if (comp.time >= s0W) {
-                if (wmW > 0.5) {
-                    if (s1W > 0 && s1W > s0W) { wdtW = wsgW * amtW * (Math.min(comp.time, s1W) - s0W) / (s1W - s0W); }
+                if (shpW > 0.5) {
+                    if (wmW > 0.5) {
+                        if (s1W > 0 && s1W > s0W) { var wfrW = (Math.min(comp.time, s1W) - s0W) / (s1W - s0W); var wphW2 = wfrW * 2; wdtW = wsgW * amtW * ((wphW2 < 1) ? wphW2 : 2 - wphW2); }
+                    } else {
+                        var phW = (comp.time - s0W) % 2;
+                        var legW = (phW < 1) ? phW : 2 - phW;
+                        wdtW = wsgW * amtW * legW;
+                    }
                 } else {
-                    var phW = (comp.time - s0W) % 2;
-                    var legW = (phW < 1) ? phW : 2 - phW;
-                    wdtW = wsgW * amtW * legW;
+                    if (wmW > 0.5) {
+                        if (s1W > 0 && s1W > s0W) { wdtW = wsgW * amtW * (Math.min(comp.time, s1W) - s0W) / (s1W - s0W); }
+                    } else {
+                        wdtW = wsgW * amtW * (comp.time - s0W);
+                    }
                 }
             }
             widthP.setValue(baseW + wdtW);

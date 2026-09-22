@@ -19,13 +19,34 @@ function vrtRailSizeExpr(rail) {
     return true;
 }
 
-/* Travel rig: 5 sliders + live Size expression. Called by Build/Run/Stop. */
+/* Travel rig + live Size expr. Fresh WShape follows old WMode (Span=Ramp, Rate=Wave). */
 function vrtTravelEnsure(rail) {
+    var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects on rail");
+    var i, e, hadShape = false, mdv = 0;
+    for (i = 1; i <= fx.numProperties; i++) {
+        e = null;
+        try { e = fx.property(i); } catch (e0) { e = null; }
+        if (e === null || e === undefined) { continue; }
+        if (e.name === "VRT WShape") { hadShape = true; }
+        if (e.name === "VRT WMode") { try { mdv = vrtProp(e, "ADBE Slider Control-0001", "Slider", "s").value; } catch (eM) {} }
+    }
     vrtAddSlider(rail, "VRT W0", 0);
     vrtAddSlider(rail, "VRT W1", 0);
     vrtAddSlider(rail, "VRT WAmt", 0);
     vrtAddSlider(rail, "VRT WDir", 1);
     vrtAddSlider(rail, "VRT WMode", 0);
+    vrtAddSlider(rail, "VRT WShape", 1);
+    if (!hadShape) {
+        var n = fx.numProperties, j, q;
+        for (j = 1; j <= n; j++) {
+            q = null;
+            try { q = fx.property(j); } catch (e1) { q = null; }
+            if (q !== null && q !== undefined && q.name === "VRT WShape") {
+                vrtProp(q, "ADBE Slider Control-0001", "Slider", "s").setValue((mdv > 0.5) ? 0 : 1);
+                break;
+            }
+        }
+    }
     vrtRailSizeExpr(rail);
 }
 
@@ -142,7 +163,7 @@ function vrtRailSet(param, valueS) {
         var i, found = null;
         for (i = 1; i <= fx.numProperties; i++) {
             var e = fx.property(i);
-            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode")) { found = e; break; }
+            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode") || (param === "wshape" && e.name === "VRT WShape")) { found = e; break; }
         }
         if (found === null) { return vrtResp(false, "", "rebuild rail"); }
         if (param === "width") {
@@ -161,7 +182,7 @@ function vrtRailGet() {
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
         var rp = vrtProp(vrtTrans(rail, "rail"), "ADBE Position", "Position", "position on rail").value;
-        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"], ["wamt", "VRT WAmt"], ["w0", "VRT W0"], ["w1", "VRT W1"], ["wdir", "VRT WDir"], ["wmode", "VRT WMode"]];
+        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"], ["wamt", "VRT WAmt"], ["w0", "VRT W0"], ["w1", "VRT W1"], ["wdir", "VRT WDir"], ["wmode", "VRT WMode"], ["wshape", "VRT WShape"]];
         var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects on rail");
         var got = {};
         var i, j;
@@ -171,11 +192,11 @@ function vrtRailGet() {
                 if (e.name === want[j][1]) { got[want[j][0]] = vrtProp(e, "ADBE Slider Control-0001", "Slider", "rail slider").value; }
             }
         }
-        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined || got.wamt === undefined || got.w0 === undefined || got.w1 === undefined || got.wdir === undefined || got.wmode === undefined) { return vrtResp(false, "", "rebuild rail"); }
+        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined || got.wamt === undefined || got.w0 === undefined || got.w1 === undefined || got.wdir === undefined || got.wmode === undefined || got.wshape === undefined) { return vrtResp(false, "", "rebuild rail"); }
         var rt = vrtTrans(rail, "rail");
         var txv = vrtProp(rt, "ADBE Rotate X", "X Rotation", "tilt X").value;
         return '{"ok":true,"x":' + rp[0] + ',"y":' + rp[1] + ',"z":' + rp[2] +
-            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + '}';
+            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + ',"wshape":' + got.wshape + '}';
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
 }
 

@@ -21,11 +21,13 @@
     if (onn) { onn.title = ot; }
   }
 
-  function syncTravelWords(dir, mode) {
+  function syncTravelWords(dir, mode, shape) {
     var dw = document.getElementById('travel-dir-word');
     if (dw) { dw.textContent = (dir >= 0) ? 'Grow' : 'Shrink'; }
     var mw = document.getElementById('travel-mode-word');
     if (mw) { mw.textContent = mode ? 'Span' : 'Rate'; }
+    var sw = document.getElementById('travel-shape-word');
+    if (sw) { sw.textContent = shape ? 'Wave' : 'Ramp'; }
     var ot = mode ? 'Travel amount px over Start–End (0 = still)' : 'Travel amount px per wobble (0 = still)';
     var tr = document.getElementById('rail-wamtr');
     var tn = document.getElementById('rail-wamt');
@@ -36,12 +38,13 @@
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode }; } catch (e) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape }; } catch (e) {}
       try { window.vrtMotionMode = (r.mode > 0.5) ? 1 : 0; } catch (eM) {}
       syncModeWord(window.vrtMotionMode ? 1 : 0);
       try { window.vrtTravelDir = (r.wdir < 0) ? -1 : 1; } catch (eD) {}
       try { window.vrtTravelMode = (r.wmode > 0.5) ? 1 : 0; } catch (eTM) {}
-      syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, window.vrtTravelMode ? 1 : 0);
+      try { window.vrtTravelShape = (r.wshape > 0.5) ? 1 : 0; } catch (eTS) {}
+      syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, window.vrtTravelMode ? 1 : 0, (window.vrtTravelShape === 0) ? 0 : 1);
       setRailPair('rail-width', r.width); setRailPair('rail-prog', r.prog); setRailPair('rail-height', r.height); setRailPair('rail-tiltx', r.tiltx); setRailPair('rail-tiltz', r.tiltz); setRailPair('rail-orbit', r.orbit);
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
       setRailPair('rail-t0', r.t0); setRailPair('rail-t1', r.t1);
@@ -142,7 +145,7 @@
           if (r.ok) {
             window.vrtTravelDir = nxtD;
             try { if (window.vrtSnapRail) { window.vrtSnapRail.wdir = nxtD; } } catch (eS) {}
-            syncTravelWords(nxtD, window.vrtTravelMode ? 1 : 0);
+            syncTravelWords(nxtD, window.vrtTravelMode ? 1 : 0, (window.vrtTravelShape === 0) ? 0 : 1);
           }
           window.VRT.status(r.ok ? ('✓ ' + (nxtD >= 0 ? 'Grow' : 'Shrink')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
@@ -159,9 +162,27 @@
           if (r.ok) {
             window.vrtTravelMode = nxtT;
             try { if (window.vrtSnapRail) { window.vrtSnapRail.wmode = nxtT; } } catch (eS2) {}
-            syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, nxtT);
+            syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, nxtT, (window.vrtTravelShape === 0) ? 0 : 1);
           }
           window.VRT.status(r.ok ? ('✓ ' + (nxtT ? 'Span' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
+    var shapeBtn = $('btn-travel-shape');
+    if (shapeBtn) {
+      shapeBtn.addEventListener('click', function () {
+        var curS = (window.vrtTravelShape === 0) ? 0 : 1;
+        var nxtS = curS ? 0 : 1;
+        window.VRT.busy(shapeBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtRailSet', ['wshape', String(nxtS)], function (r) {
+          window.VRT.busy(shapeBtn, false);
+          if (r.ok) {
+            window.vrtTravelShape = nxtS;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.wshape = nxtS; } } catch (eS3) {}
+            syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, window.vrtTravelMode ? 1 : 0, nxtS);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (nxtS ? 'Wave' : 'Ramp')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
       });
     }

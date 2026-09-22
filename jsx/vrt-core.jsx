@@ -134,16 +134,25 @@ function vrtTravelDelta(p) {
         'var wamt = ' + p + 'effect("VRT WAmt")("ADBE Slider Control-0001");' +
         'var wdir = ' + p + 'effect("VRT WDir")("ADBE Slider Control-0001");' +
         'var wmode = ' + p + 'effect("VRT WMode")("ADBE Slider Control-0001");' +
+        'var wshp = ' + p + 'effect("VRT WShape")("ADBE Slider Control-0001");' +
         'var wsg = (wdir >= 0) ? 1 : -1;' +
         'var wdt = 0;' +
         'if (time >= s0) {' +
+        'if (wshp > 0.5) {' +
         'if (wmode > 0.5) {' +
         'var wspan = (s1 > 0 && s1 > s0) ? (s1 - s0) : 0;' +
-        'if (wspan > 0) {wdt = wsg*wamt*(Math.min(time, s1) - s0)/wspan;}' +
+        'if (wspan > 0) {var wfr = (Math.min(time, s1) - s0)/wspan; var wph2 = wfr*2; wdt = wsg*wamt*((wph2 < 1) ? wph2 : 2 - wph2);}' +
         '} else {' +
         'var wph = (time - s0) % 2;' +
-        'var wleg = (wph < 1) ? wph : 2 - wph;' +
-        'wdt = wsg*wamt*wleg;' +
+        'wdt = wsg*wamt*((wph < 1) ? wph : 2 - wph);' +
+        '}' +
+        '} else {' +
+        'if (wmode > 0.5) {' +
+        'var wspan2 = (s1 > 0 && s1 > s0) ? (s1 - s0) : 0;' +
+        'if (wspan2 > 0) {wdt = wsg*wamt*(Math.min(time, s1) - s0)/wspan2;}' +
+        '} else {' +
+        'wdt = wsg*wamt*(time - s0);' +
+        '}' +
         '}' +
         '}';
 }
