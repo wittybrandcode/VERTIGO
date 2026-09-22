@@ -134,12 +134,16 @@ function vrtMotionOrbitStart() {
         camPos.expression = vrtRailCamExpr();
         var t0b = vrtMotionSlider(rail, "VRT T0");
         var t1b = vrtMotionSlider(rail, "VRT T1");
-        t0b.setValue(comp.time);
+        /* Respect a scheduled future start; only past/empty T0 becomes now. */
+        var keepT0 = false;
+        try { if (t0b.value > comp.time) { keepT0 = true; } } catch (eT0) {}
+        if (!keepT0 && t0b !== null) { t0b.setValue(comp.time); }
         if (t1b !== null) {
             var t1v = 0;
             try { t1v = t1b.value; } catch (eT) { t1v = 0; }
             if (t1v > 0 && t1v <= comp.time) { t1b.setValue(0); }
         }
+        if (keepT0) { return vrtResp(true, "scheduled — starts at T0", ""); }
         return vrtResp(true, "running — Stop to freeze", "");
     } catch (e) { return vrtResp(false, "", "run: " + e.toString()); }
     finally { app.endUndoGroup(); }
@@ -162,6 +166,10 @@ function vrtMotionOrbitStop() {
         var tiltP = vrtMotionSlider(rail, "VRT TiltZ");
         var t1P = vrtMotionSlider(rail, "VRT T1");
         if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null) { return vrtResp(false, "", "rebuild rail"); }
+        if (comp.time <= t0P.value) {
+            spdP.setValue(0);
+            return vrtResp(true, "stopped before start", "");
+        }
         var te = comp.time;
         if (t1P.value > 0 && t1P.value > t0P.value && comp.time > t1P.value) { te = t1P.value; }
         var cur = tiltP.value + progP.value / 100 * 360 + spdP.value * 360 * (te - t0P.value);
