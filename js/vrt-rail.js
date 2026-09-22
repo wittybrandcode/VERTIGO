@@ -35,20 +35,35 @@
     if (tn) { tn.title = ot; }
   }
 
-  function syncSpinWord(mode) {
+  function syncSpinWord(mode, link) {
     var mw = document.getElementById('spin-mode-word');
     if (mw) { mw.textContent = mode ? 'Count' : 'Rate'; }
+    var lw = document.getElementById('spin-link-word');
+    if (lw) { lw.textContent = link ? 'Unlink' : 'Link'; }
     var ot = mode ? 'Spin turns over Start–End (0 = still)' : 'Spin turns/sec (0 = still)';
-    var sr = document.getElementById('rail-ospdr');
-    var sn = document.getElementById('rail-ospd');
-    if (sr) { sr.title = ot; }
-    if (sn) { sn.title = ot; }
+    var tr = document.getElementById('rail-osptr');
+    var tn = document.getElementById('rail-ospt');
+    var dr = document.getElementById('rail-ospdegr');
+    var dn = document.getElementById('rail-ospdeg');
+    if (tr) { tr.title = ot; }
+    if (tn) { tn.title = ot; }
+    if (dr) { dr.title = ot; }
+    if (dn) { dn.title = ot; }
   }
 
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape, ospd: r.ospd, ot0: r.ot0, ot1: r.ot1, omode: r.omode }; } catch (e) {}
+      var ospT = 0, ospD = 0;
+      try {
+        var ospSg = (r.ospd < 0) ? -1 : 1;
+        var ospAt = (r.ospd < 0) ? -r.ospd : r.ospd;
+        ospT = Math.floor(ospAt);
+        ospD = Math.round((ospAt - ospT) * 360);
+        if (ospD >= 360) { ospT += 1; ospD = 0; }
+        ospT = ospSg * ospT;
+      } catch (eOS) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape, ospd: r.ospd, ospt: ospT, ospdeg: ospD, ot0: r.ot0, ot1: r.ot1, omode: r.omode, olink: r.olink }; } catch (e) {}
       try { window.vrtMotionMode = (r.mode > 0.5) ? 1 : 0; } catch (eM) {}
       syncModeWord(window.vrtMotionMode ? 1 : 0);
       try { window.vrtTravelDir = (r.wdir < 0) ? -1 : 1; } catch (eD) {}
@@ -59,15 +74,16 @@
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
       setRailPair('rail-t0', r.t0); setRailPair('rail-t1', r.t1);
       setRailPair('rail-wamt', r.wamt); setRailPair('rail-w0', r.w0); setRailPair('rail-w1', r.w1);
-      setRailPair('rail-ospd', r.ospd); setRailPair('rail-ot0', r.ot0); setRailPair('rail-ot1', r.ot1);
+      setRailPair('rail-ospt', ospT); setRailPair('rail-ospdeg', ospD); setRailPair('rail-ot0', r.ot0); setRailPair('rail-ot1', r.ot1);
       try { window.vrtSpinMode = (r.omode > 0.5) ? 1 : 0; } catch (eSM) {}
-      syncSpinWord(window.vrtSpinMode ? 1 : 0);
+      try { window.vrtSpinLink = r.olink ? 1 : 0; } catch (eSL) {}
+      syncSpinWord(window.vrtSpinMode ? 1 : 0, window.vrtSpinLink ? 1 : 0);
       if (!silent) { window.VRT.status('✓ rail', 'ok'); }
     });
   }
 
   function railInit($) {
-    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-wamt', 'wamt'], ['rail-w0', 'w0'], ['rail-w1', 'w1'], ['rail-ospd', 'ospd'], ['rail-ot0', 'ot0'], ['rail-ot1', 'ot1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
+    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-wamt', 'wamt'], ['rail-w0', 'w0'], ['rail-w1', 'w1'], ['rail-ospt', 'ospt'], ['rail-ospdeg', 'ospdeg'], ['rail-ot0', 'ot0'], ['rail-ot1', 'ot1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
       var rid = document.getElementById(pair[0] + 'r');
       var nid = document.getElementById(pair[0]);
       function sendRail(quiet) {
@@ -210,9 +226,27 @@
           if (r.ok) {
             window.vrtSpinMode = nxtO;
             try { if (window.vrtSnapRail) { window.vrtSnapRail.omode = nxtO; } } catch (eS4) {}
-            syncSpinWord(nxtO);
+            syncSpinWord(nxtO, window.vrtSpinLink ? 1 : 0);
           }
           window.VRT.status(r.ok ? ('✓ ' + (nxtO ? 'Count' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
+    var spinLinkBtn = $('btn-spin-link');
+    if (spinLinkBtn) {
+      spinLinkBtn.addEventListener('click', function () {
+        window.VRT.busy(spinLinkBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtSpinLink', [], function (r) {
+          window.VRT.busy(spinLinkBtn, false);
+          if (r.ok) {
+            var linked = (r.msg && r.msg.indexOf('rail') >= 0) ? 1 : 0;
+            window.vrtSpinLink = linked;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.olink = linked; } } catch (eS5) {}
+            syncSpinWord(window.vrtSpinMode ? 1 : 0, linked);
+            refreshRail(true);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (r.msg || 'done')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
       });
     }

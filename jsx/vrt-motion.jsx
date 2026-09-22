@@ -366,3 +366,35 @@ function vrtMotionOrbitStop() {
     } catch (e) { return vrtResp(false, "", "stop: " + e.toString()); }
     finally { app.endUndoGroup(); }
 }
+
+function vrtSpinLink() {
+    app.beginUndoGroup("VERTIGO: Spin Link");
+    try {
+        var comp = vrtGetComp();
+        if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
+        var rail = vrtRailLayer(comp);
+        if (rail === null) { return vrtResp(false, "", "build rail first"); }
+        vrtUnlocked(rail, "rail");
+        vrtAddSlider(rail, "VRT OSpd", 0);
+        vrtAddSlider(rail, "VRT OT0", 0);
+        vrtAddSlider(rail, "VRT OT1", 0);
+        vrtAddSlider(rail, "VRT OMode", 0);
+        var cam = vrtFindCam(comp);
+        if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
+        vrtUnlocked(cam, "camera");
+        var oriP = vrtProp(vrtTrans(cam, "camera"), "ADBE Orientation", "Orientation", "orientation");
+        var oEx = "";
+        try { oEx = oriP.expression; } catch (eOX) { oEx = ""; }
+        if (oEx.indexOf("VRT OSpd") >= 0) {
+            var cvL = oriP.value;
+            oriP.expression = "";
+            oriP.setValue([cvL[0], cvL[1], cvL[2]]);
+            return vrtResp(true, "spin: manual", "");
+        }
+        if (oriP.numKeys > 0) { return vrtResp(false, "", "camera orientation has keyframes - remove first"); }
+        if (oEx !== "") { return vrtResp(false, "", "camera Orientation has custom expression - clear it first"); }
+        oriP.expression = vrtCamSpinExpr();
+        return vrtResp(true, "spin: rail", "");
+    } catch (e) { return vrtResp(false, "", "spin: " + e.toString()); }
+    finally { app.endUndoGroup(); }
+}

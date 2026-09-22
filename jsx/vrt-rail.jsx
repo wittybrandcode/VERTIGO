@@ -163,11 +163,31 @@ function vrtRailSet(param, valueS) {
         var i, found = null;
         for (i = 1; i <= fx.numProperties; i++) {
             var e = fx.property(i);
-            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode") || (param === "wshape" && e.name === "VRT WShape") || (param === "ospd" && e.name === "VRT OSpd") || (param === "ot0" && e.name === "VRT OT0") || (param === "ot1" && e.name === "VRT OT1") || (param === "omode" && e.name === "VRT OMode")) { found = e; break; }
+            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode") || (param === "wshape" && e.name === "VRT WShape") || (param === "ospd" && e.name === "VRT OSpd") || (param === "ot0" && e.name === "VRT OT0") || (param === "ot1" && e.name === "VRT OT1") || (param === "omode" && e.name === "VRT OMode") || (param === "ospt" && e.name === "VRT OSpd") || (param === "ospdeg" && e.name === "VRT OSpd")) { found = e; break; }
         }
         if (found === null) { return vrtResp(false, "", "rebuild rail"); }
         if (param === "width") {
             if (v < 100) { v = 100; }
+        }
+        if (param === "ospt" || param === "ospdeg") {
+            var so = vrtProp(found, "ADBE Slider Control-0001", "Slider", "rail slider");
+            if (param === "ospt") {
+                var cv = so.value;
+                var ti = (cv >= 0) ? Math.floor(cv) : Math.ceil(cv);
+                var fr = cv - ti;
+                if (fr < 0) { fr = -fr; }
+                var sg = (v < 0 || (v === 0 && cv < 0)) ? -1 : 1;
+                so.setValue(v + sg * fr);
+            } else {
+                var dd = v;
+                if (dd < 0) { dd = 0; }
+                if (dd > 360) { dd = 360; }
+                var cv2 = so.value;
+                var ti2 = (cv2 >= 0) ? Math.floor(cv2) : Math.ceil(cv2);
+                var sg2 = (ti2 < 0 || cv2 < 0) ? -1 : 1;
+                so.setValue(ti2 + sg2 * dd / 360);
+            }
+            return vrtResp(true, "live", "");
         }
         vrtProp(found, "ADBE Slider Control-0001", "Slider", "rail slider").setValue(v);
         return vrtResp(true, "live", "");
@@ -195,8 +215,18 @@ function vrtRailGet() {
         if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined || got.wamt === undefined || got.w0 === undefined || got.w1 === undefined || got.wdir === undefined || got.wmode === undefined || got.wshape === undefined || got.ospd === undefined || got.ot0 === undefined || got.ot1 === undefined || got.omode === undefined) { return vrtResp(false, "", "rebuild rail"); }
         var rt = vrtTrans(rail, "rail");
         var txv = vrtProp(rt, "ADBE Rotate X", "X Rotation", "tilt X").value;
+        var olk = 0;
+        try {
+            var cS = vrtFindCam(comp);
+            if (cS !== null) {
+                var oP = vrtProp(vrtTrans(cS, "camera"), "ADBE Orientation", "Orientation", "orientation");
+                var oX = "";
+                try { oX = oP.expression; } catch (eOX) { oX = ""; }
+                if (oX.indexOf("VRT OSpd") >= 0) { olk = 1; }
+            }
+        } catch (eOL) {}
         return '{"ok":true,"x":' + rp[0] + ',"y":' + rp[1] + ',"z":' + rp[2] +
-            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + ',"wshape":' + got.wshape + ',"ospd":' + got.ospd + ',"ot0":' + got.ot0 + ',"ot1":' + got.ot1 + ',"omode":' + got.omode + '}';
+            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + ',"wshape":' + got.wshape + ',"ospd":' + got.ospd + ',"ot0":' + got.ot0 + ',"ot1":' + got.ot1 + ',"omode":' + got.omode + ',"olink":' + olk + '}';
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
 }
 

@@ -68,10 +68,11 @@
     <details class="camgroup">
       <summary>SPIN<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
       <div class="camrows">
-        <div class="row prow"><span class="w">Turns</span><input id="rail-ospdr" type="range" min="-5" max="5" step="0.05" value="0" title="Spin turns/sec (0 = still)"><input id="rail-ospd" type="number" step="0.05" value="0" title="Spin turns/sec (0 = still)"></div>
+        <div class="row prow prow3"><span class="w">Turns</span><div class="axis"><input id="rail-osptr" type="range" min="-5" max="5" step="1" value="0" title="Spin full turns (integer)"><div class="axrow"><span class="ax">x</span><input id="rail-ospt" type="number" step="1" value="0" title="Spin full turns (integer)"></div></div><div class="axis"><input id="rail-ospdegr" type="range" min="0" max="360" step="1" value="0" title="Spin extra degrees (0-360)"><div class="axrow"><span class="ax">°</span><input id="rail-ospdeg" type="number" step="1" value="0" title="Spin extra degrees (0-360)"></div></div></div>
         <div class="row prow"><span class="w">Start</span><input id="rail-ot0" type="number" step="0.5" value="0" title="Spin start (sec, auto on Run)"></div>
         <div class="row prow"><span class="w">End</span><input id="rail-ot1" type="number" step="0.5" value="0" title="Spin end (sec, 0 = infinite)"></div>
         <div class="row">
+          <button class="ibtn" id="btn-spin-link" title="Attach/detach spin (bakes angle on detach)"><span class="g">⇥</span><span class="w" id="spin-link-word">Link</span></button>
           <button class="ibtn" id="btn-spin-mode" title="Spin basis: Rate (turns/sec) or Count (turns over Start–End)"><span class="g">⇄</span><span class="w" id="spin-mode-word">Rate</span></button>
         </div>
       </div>
