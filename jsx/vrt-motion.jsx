@@ -19,20 +19,6 @@ function vrtMotionSlider(rail, name) {
     return null;
 }
 
-/* Current orbit expression template (single source: build + self-heal). */
-function vrtRailCamExpr() {
-    return 'var rail = thisComp.layer("VRT_Rail");' +
-        'var w = rail.effect("VRT Width")("ADBE Slider Control-0001");' +
-        'var p = rail.effect("VRT Prog")("ADBE Slider Control-0001");' +
-        'var h = rail.effect("VRT Height")("ADBE Slider Control-0001");' +
-        'var spd = rail.effect("VRT Orbit")("ADBE Slider Control-0001");' +
-        'var t0 = rail.effect("VRT T0")("ADBE Slider Control-0001");' +
-        'var a = (p/100 + spd*(time - t0)/360)*2*Math.PI;' +
-        'var r = w/2;' +
-        'var pt = rail.toWorld([r*Math.cos(a), r*Math.sin(a), 0]);' +
-        '[pt[0], pt[1]+h, pt[2]];';
-}
-
 /* Read the whole motion chain and report the broken link (for the panel log). */
 function vrtRailDiag() {
     try {
@@ -60,6 +46,15 @@ function vrtRailDiag() {
                 }
                 out[out.length] = names[i] + ":" + (has ? val : "MISSING");
             }
+            var zt = "none";
+            try {
+                var zPr = vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin");
+                var zEx2 = "";
+                try { zEx2 = zPr.expression; } catch (eZ2) { zEx2 = ""; }
+                if (zEx2.indexOf("VRT TiltZ") >= 0) { zt = "turntable"; }
+                else if (zEx2 !== "") { zt = "custom"; }
+            } catch (eZT) {}
+            out[out.length] = "railZ:" + zt;
         }
         var cam = vrtFindCam(comp);
         out[out.length] = "cam:" + (cam === null ? "NONE" : cam.name);
@@ -68,7 +63,7 @@ function vrtRailDiag() {
             var ex = "";
             try { ex = cp.expression; } catch (eX) { ex = ""; }
             var tag = "none";
-            if (ex.indexOf("spd*(time") >= 0) { tag = "current"; }
+            if (ex.indexOf("toWorld([r,0,0])") >= 0) { tag = "current"; }
             else if (ex.indexOf("VRT_Rail") >= 0) { tag = "OLD-TEMPLATE"; }
             else if (ex !== "") { tag = "custom"; }
             out[out.length] = "posExpr:" + tag;
@@ -90,6 +85,17 @@ function vrtMotionOrbitStart() {
         /* Self-heal: ensure motion sliders (old rails lack them). */
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
+        vrtAddSlider(rail, "VRT TiltZ", 0);
+        /* Turntable drive lives on rail Z: static tilt + prog phase + live speed. */
+        var zP = vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin");
+        var zEx = "";
+        try { zEx = zP.expression; } catch (eZX) { zEx = ""; }
+        if (zEx === "") {
+            if (zP.numKeys > 0) { return vrtResp(false, "", "rail Z has keyframes - remove first"); }
+            zP.expression = vrtTurntableExpr();
+        } else if (zEx.indexOf("VRT TiltZ") < 0) {
+            return vrtResp(false, "", "rail Z has custom expression - clear it first");
+        }
         var cam = vrtFindCam(comp);
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
         var camPos = vrtProp(vrtTrans(cam, "camera"), "ADBE Position", "Position", "position");
@@ -114,11 +120,13 @@ function vrtMotionOrbitStop() {
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
+        vrtAddSlider(rail, "VRT TiltZ", 0);
         var progP = vrtMotionSlider(rail, "VRT Prog");
         var spdP = vrtMotionSlider(rail, "VRT Orbit");
         var t0P = vrtMotionSlider(rail, "VRT T0");
-        if (progP === null || spdP === null || t0P === null) { return vrtResp(false, "", "rebuild rail"); }
-        var cur = progP.value / 100 * 360 + spdP.value * (comp.time - t0P.value);
+        var tiltP = vrtMotionSlider(rail, "VRT TiltZ");
+        if (progP === null || spdP === null || t0P === null || tiltP === null) { return vrtResp(false, "", "rebuild rail"); }
+        var cur = tiltP.value + progP.value / 100 * 360 + spdP.value * (comp.time - t0P.value);
         var norm = ((cur % 360) + 360) % 360;
         progP.setValue(norm / 360 * 100);
         spdP.setValue(0);

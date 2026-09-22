@@ -112,6 +112,24 @@ function vrtAddSlider(layer, name, val) {
     return sp;
 }
 
+/* Shared expression templates (single source: build + self-heal + diag agree). */
+function vrtTurntableExpr() {
+    return 'var tilt = effect("VRT TiltZ")("ADBE Slider Control-0001");' +
+        'var prog = effect("VRT Prog")("ADBE Slider Control-0001");' +
+        'var spd = effect("VRT Orbit")("ADBE Slider Control-0001");' +
+        'var t0 = effect("VRT T0")("ADBE Slider Control-0001");' +
+        'tilt + prog/100*360 + spd*(time - t0);';
+}
+
+function vrtRailCamExpr() {
+    return 'var rail = thisComp.layer("VRT_Rail");' +
+        'var w = rail.effect("VRT Width")("ADBE Slider Control-0001");' +
+        'var h = rail.effect("VRT Height")("ADBE Slider Control-0001");' +
+        'var r = w/2;' +
+        'var pt = rail.toWorld([r,0,0]);' +
+        '[pt[0], pt[1]+h, pt[2]];';
+}
+
 /* Rail shape by fixed name. Shared like vrtFindCam: rail + motion modules use it. */
 function vrtRailLayer(comp) {
     var L = null;
