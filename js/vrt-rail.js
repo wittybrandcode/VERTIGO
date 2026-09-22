@@ -35,10 +35,20 @@
     if (tn) { tn.title = ot; }
   }
 
+  function syncSpinWord(mode) {
+    var mw = document.getElementById('spin-mode-word');
+    if (mw) { mw.textContent = mode ? 'Count' : 'Rate'; }
+    var ot = mode ? 'Spin turns over Start–End (0 = still)' : 'Spin turns/sec (0 = still)';
+    var sr = document.getElementById('rail-ospdr');
+    var sn = document.getElementById('rail-ospd');
+    if (sr) { sr.title = ot; }
+    if (sn) { sn.title = ot; }
+  }
+
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape }; } catch (e) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape, ospd: r.ospd, ot0: r.ot0, ot1: r.ot1, omode: r.omode }; } catch (e) {}
       try { window.vrtMotionMode = (r.mode > 0.5) ? 1 : 0; } catch (eM) {}
       syncModeWord(window.vrtMotionMode ? 1 : 0);
       try { window.vrtTravelDir = (r.wdir < 0) ? -1 : 1; } catch (eD) {}
@@ -49,12 +59,15 @@
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
       setRailPair('rail-t0', r.t0); setRailPair('rail-t1', r.t1);
       setRailPair('rail-wamt', r.wamt); setRailPair('rail-w0', r.w0); setRailPair('rail-w1', r.w1);
+      setRailPair('rail-ospd', r.ospd); setRailPair('rail-ot0', r.ot0); setRailPair('rail-ot1', r.ot1);
+      try { window.vrtSpinMode = (r.omode > 0.5) ? 1 : 0; } catch (eSM) {}
+      syncSpinWord(window.vrtSpinMode ? 1 : 0);
       if (!silent) { window.VRT.status('✓ rail', 'ok'); }
     });
   }
 
   function railInit($) {
-    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-wamt', 'wamt'], ['rail-w0', 'w0'], ['rail-w1', 'w1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
+    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-wamt', 'wamt'], ['rail-w0', 'w0'], ['rail-w1', 'w1'], ['rail-ospd', 'ospd'], ['rail-ot0', 'ot0'], ['rail-ot1', 'ot1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
       var rid = document.getElementById(pair[0] + 'r');
       var nid = document.getElementById(pair[0]);
       function sendRail(quiet) {
@@ -183,6 +196,23 @@
             syncTravelWords((window.vrtTravelDir === -1) ? -1 : 1, window.vrtTravelMode ? 1 : 0, nxtS);
           }
           window.VRT.status(r.ok ? ('✓ ' + (nxtS ? 'Wave' : 'Ramp')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
+    var spinBtn = $('btn-spin-mode');
+    if (spinBtn) {
+      spinBtn.addEventListener('click', function () {
+        var nxtO = window.vrtSpinMode ? 0 : 1;
+        window.VRT.busy(spinBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtRailSet', ['omode', String(nxtO)], function (r) {
+          window.VRT.busy(spinBtn, false);
+          if (r.ok) {
+            window.vrtSpinMode = nxtO;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.omode = nxtO; } } catch (eS4) {}
+            syncSpinWord(nxtO);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (nxtO ? 'Count' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
       });
     }

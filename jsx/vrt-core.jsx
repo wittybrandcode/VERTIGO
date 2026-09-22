@@ -164,6 +164,21 @@ function vrtTravelSizeExpr() {
         '[ww, ww];';
 }
 
+/* Camera roll: X/Y pass through, Z spins from its static value. Params on rail. */
+function vrtCamSpinExpr() {
+    return 'var orb = thisComp.layer("VRT_Rail");' +
+        'var osp = orb.effect("VRT OSpd")("ADBE Slider Control-0001");' +
+        'var ot0 = orb.effect("VRT OT0")("ADBE Slider Control-0001");' +
+        'var ot1 = orb.effect("VRT OT1")("ADBE Slider Control-0001");' +
+        'var omd = orb.effect("VRT OMode")("ADBE Slider Control-0001");' +
+        'var ote = (ot1 > 0 && ot1 > ot0) ? ot1 : 1000000;' +
+        'var ott = Math.min(Math.max(time, ot0), ote);' +
+        'var ospn = 0;' +
+        'if (omd > 0.5) {var osp2 = (ot1 > 0 && ot1 > ot0) ? (ot1 - ot0) : 0; if (osp2 > 0) {ospn = osp*360*(ott - ot0)/osp2;}} else {ospn = osp*360*(ott - ot0);}' +
+        'var ov = value;' +
+        '[ov[0], ov[1], ov[2] + ospn];';
+}
+
 function vrtRailCamExpr() {
     return 'var rail = thisComp.layer("VRT_Rail");' +
         'var w = rail.effect("VRT Width")("ADBE Slider Control-0001");' +
