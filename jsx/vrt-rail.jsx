@@ -163,7 +163,7 @@ function vrtRailSet(param, valueS) {
         var i, found = null;
         for (i = 1; i <= fx.numProperties; i++) {
             var e = fx.property(i);
-            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode") || (param === "wshape" && e.name === "VRT WShape") || (param === "ospd" && e.name === "VRT OSpd") || (param === "ot0" && e.name === "VRT OT0") || (param === "ot1" && e.name === "VRT OT1") || (param === "omode" && e.name === "VRT OMode") || (param === "ospt" && e.name === "VRT OSpd") || (param === "ospdeg" && e.name === "VRT OSpd")) { found = e; break; }
+            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode") || (param === "wamt" && e.name === "VRT WAmt") || (param === "w0" && e.name === "VRT W0") || (param === "w1" && e.name === "VRT W1") || (param === "wdir" && e.name === "VRT WDir") || (param === "wmode" && e.name === "VRT WMode") || (param === "wshape" && e.name === "VRT WShape") || (param === "ospd" && e.name === "VRT OSpd") || (param === "ot0" && e.name === "VRT OT0") || (param === "ot1" && e.name === "VRT OT1") || (param === "omode" && e.name === "VRT OMode") || (param === "ospt" && e.name === "VRT OSpd") || (param === "ospdeg" && e.name === "VRT OSpd") || (param === "oshape" && e.name === "VRT OShape")) { found = e; break; }
         }
         if (found === null) { return vrtResp(false, "", "rebuild rail"); }
         if (param === "width") {
@@ -202,7 +202,7 @@ function vrtRailGet() {
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
         var rp = vrtProp(vrtTrans(rail, "rail"), "ADBE Position", "Position", "position on rail").value;
-        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"], ["wamt", "VRT WAmt"], ["w0", "VRT W0"], ["w1", "VRT W1"], ["wdir", "VRT WDir"], ["wmode", "VRT WMode"], ["wshape", "VRT WShape"], ["ospd", "VRT OSpd"], ["ot0", "VRT OT0"], ["ot1", "VRT OT1"], ["omode", "VRT OMode"]];
+        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"], ["wamt", "VRT WAmt"], ["w0", "VRT W0"], ["w1", "VRT W1"], ["wdir", "VRT WDir"], ["wmode", "VRT WMode"], ["wshape", "VRT WShape"], ["ospd", "VRT OSpd"], ["ot0", "VRT OT0"], ["ot1", "VRT OT1"], ["omode", "VRT OMode"], ["oshape", "VRT OShape"]];
         var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects on rail");
         var got = {};
         var i, j;
@@ -212,7 +212,7 @@ function vrtRailGet() {
                 if (e.name === want[j][1]) { got[want[j][0]] = vrtProp(e, "ADBE Slider Control-0001", "Slider", "rail slider").value; }
             }
         }
-        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined || got.wamt === undefined || got.w0 === undefined || got.w1 === undefined || got.wdir === undefined || got.wmode === undefined || got.wshape === undefined || got.ospd === undefined || got.ot0 === undefined || got.ot1 === undefined || got.omode === undefined) { return vrtResp(false, "", "rebuild rail"); }
+        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined || got.wamt === undefined || got.w0 === undefined || got.w1 === undefined || got.wdir === undefined || got.wmode === undefined || got.wshape === undefined || got.ospd === undefined || got.ot0 === undefined || got.ot1 === undefined || got.omode === undefined || got.oshape === undefined) { return vrtResp(false, "", "rebuild rail"); }
         var rt = vrtTrans(rail, "rail");
         var txv = vrtProp(rt, "ADBE Rotate X", "X Rotation", "tilt X").value;
         var olk = 0;
@@ -226,7 +226,7 @@ function vrtRailGet() {
             }
         } catch (eOL) {}
         return '{"ok":true,"x":' + rp[0] + ',"y":' + rp[1] + ',"z":' + rp[2] +
-            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + ',"wshape":' + got.wshape + ',"ospd":' + got.ospd + ',"ot0":' + got.ot0 + ',"ot1":' + got.ot1 + ',"omode":' + got.omode + ',"olink":' + olk + '}';
+            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + ',"wamt":' + got.wamt + ',"w0":' + got.w0 + ',"w1":' + got.w1 + ',"wdir":' + got.wdir + ',"wmode":' + got.wmode + ',"wshape":' + got.wshape + ',"ospd":' + got.ospd + ',"ot0":' + got.ot0 + ',"ot1":' + got.ot1 + ',"omode":' + got.omode + ',"oshape":' + got.oshape + ',"olink":' + olk + '}';
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
 }
 

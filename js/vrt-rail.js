@@ -35,11 +35,13 @@
     if (tn) { tn.title = ot; }
   }
 
-  function syncSpinWord(mode, link) {
+  function syncSpinWord(mode, link, shape) {
     var mw = document.getElementById('spin-mode-word');
     if (mw) { mw.textContent = mode ? 'Count' : 'Rate'; }
     var lw = document.getElementById('spin-link-word');
     if (lw) { lw.textContent = link ? 'Unlink' : 'Link'; }
+    var sw = document.getElementById('spin-shape-word');
+    if (sw) { sw.textContent = shape ? 'Wave' : 'Ramp'; }
     var ot = mode ? 'Spin turns over Start–End (0 = still)' : 'Spin turns/sec (0 = still)';
     var tr = document.getElementById('rail-osptr');
     var tn = document.getElementById('rail-ospt');
@@ -63,7 +65,7 @@
         if (ospD >= 360) { ospT += 1; ospD = 0; }
         ospT = ospSg * ospT;
       } catch (eOS) {}
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape, ospd: r.ospd, ospt: ospT, ospdeg: ospD, ot0: r.ot0, ot1: r.ot1, omode: r.omode, olink: r.olink }; } catch (e) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode, wamt: r.wamt, w0: r.w0, w1: r.w1, wdir: r.wdir, wmode: r.wmode, wshape: r.wshape, ospd: r.ospd, ospt: ospT, ospdeg: ospD, ot0: r.ot0, ot1: r.ot1, omode: r.omode, oshape: r.oshape, olink: r.olink }; } catch (e) {}
       try { window.vrtMotionMode = (r.mode > 0.5) ? 1 : 0; } catch (eM) {}
       syncModeWord(window.vrtMotionMode ? 1 : 0);
       try { window.vrtTravelDir = (r.wdir < 0) ? -1 : 1; } catch (eD) {}
@@ -77,7 +79,8 @@
       setRailPair('rail-ospt', ospT); setRailPair('rail-ospdeg', ospD); setRailPair('rail-ot0', r.ot0); setRailPair('rail-ot1', r.ot1);
       try { window.vrtSpinMode = (r.omode > 0.5) ? 1 : 0; } catch (eSM) {}
       try { window.vrtSpinLink = r.olink ? 1 : 0; } catch (eSL) {}
-      syncSpinWord(window.vrtSpinMode ? 1 : 0, window.vrtSpinLink ? 1 : 0);
+      try { window.vrtSpinShape = (r.oshape > 0.5) ? 1 : 0; } catch (eSS) {}
+      syncSpinWord(window.vrtSpinMode ? 1 : 0, window.vrtSpinLink ? 1 : 0, window.vrtSpinShape ? 1 : 0);
       if (!silent) { window.VRT.status('✓ rail', 'ok'); }
     });
   }
@@ -226,7 +229,7 @@
           if (r.ok) {
             window.vrtSpinMode = nxtO;
             try { if (window.vrtSnapRail) { window.vrtSnapRail.omode = nxtO; } } catch (eS4) {}
-            syncSpinWord(nxtO, window.vrtSpinLink ? 1 : 0);
+            syncSpinWord(nxtO, window.vrtSpinLink ? 1 : 0, (window.vrtSpinShape === 1) ? 1 : 0);
           }
           window.VRT.status(r.ok ? ('✓ ' + (nxtO ? 'Count' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
@@ -243,10 +246,27 @@
             var linked = (r.msg && r.msg.indexOf('rail') >= 0) ? 1 : 0;
             window.vrtSpinLink = linked;
             try { if (window.vrtSnapRail) { window.vrtSnapRail.olink = linked; } } catch (eS5) {}
-            syncSpinWord(window.vrtSpinMode ? 1 : 0, linked);
+            syncSpinWord(window.vrtSpinMode ? 1 : 0, linked, (window.vrtSpinShape === 1) ? 1 : 0);
             refreshRail(true);
           }
           window.VRT.status(r.ok ? ('✓ ' + (r.msg || 'done')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
+    var spinShapeBtn = $('btn-spin-shape');
+    if (spinShapeBtn) {
+      spinShapeBtn.addEventListener('click', function () {
+        var nxtH = (window.vrtSpinShape === 1) ? 0 : 1;
+        window.VRT.busy(spinShapeBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtRailSet', ['oshape', String(nxtH)], function (r) {
+          window.VRT.busy(spinShapeBtn, false);
+          if (r.ok) {
+            window.vrtSpinShape = nxtH;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.oshape = nxtH; } } catch (eS6) {}
+            syncSpinWord(window.vrtSpinMode ? 1 : 0, window.vrtSpinLink ? 1 : 0, nxtH);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (nxtH ? 'Wave' : 'Ramp')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
         });
       });
     }

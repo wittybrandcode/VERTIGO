@@ -171,10 +171,16 @@ function vrtCamSpinExpr() {
         'var ot0 = orb.effect("VRT OT0")("ADBE Slider Control-0001");' +
         'var ot1 = orb.effect("VRT OT1")("ADBE Slider Control-0001");' +
         'var omd = orb.effect("VRT OMode")("ADBE Slider Control-0001");' +
+        'var osh = orb.effect("VRT OShape")("ADBE Slider Control-0001");' +
         'var ote = (ot1 > 0 && ot1 > ot0) ? ot1 : 1000000;' +
         'var ott = Math.min(Math.max(time, ot0), ote);' +
         'var ospn = 0;' +
+        'if (osh > 0.5) {' +
+        'if (omd > 0.5) {var osp3 = (ot1 > 0 && ot1 > ot0) ? (ot1 - ot0) : 0; if (osp3 > 0) {var ofr = (ott - ot0)/osp3; var oph2 = ofr*2; ospn = osp*360*((oph2 < 1) ? oph2 : 2 - oph2);}}' +
+        'else {var oph = (time - ot0) % 2; ospn = osp*360*((oph < 1) ? oph : 2 - oph);}' +
+        '} else {' +
         'if (omd > 0.5) {var osp2 = (ot1 > 0 && ot1 > ot0) ? (ot1 - ot0) : 0; if (osp2 > 0) {ospn = osp*360*(ott - ot0)/osp2;}} else {ospn = osp*360*(ott - ot0);}' +
+        '}' +
         'var ov = value;' +
         '[ov[0], ov[1], ov[2] + ospn];';
 }

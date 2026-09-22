@@ -28,7 +28,7 @@ function vrtRailDiag() {
         var rail = vrtRailLayer(comp);
         out[out.length] = "rail:" + (rail === null ? "MISSING" : rail.name);
         if (rail !== null) {
-            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1", "VRT Mode", "VRT WAmt", "VRT W0", "VRT W1", "VRT WDir", "VRT WMode", "VRT WShape", "VRT OSpd", "VRT OT0", "VRT OT1", "VRT OMode"];
+            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1", "VRT Mode", "VRT WAmt", "VRT W0", "VRT W1", "VRT WDir", "VRT WMode", "VRT WShape", "VRT OSpd", "VRT OT0", "VRT OT1", "VRT OMode", "VRT OShape"];
             var fx = null;
             try { fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "fx"); } catch (eF) { fx = null; }
             var i, j;
@@ -163,6 +163,7 @@ function vrtMotionOrbitStart() {
         vrtAddSlider(rail, "VRT OT0", 0);
         vrtAddSlider(rail, "VRT OT1", 0);
         vrtAddSlider(rail, "VRT OMode", 0);
+        vrtAddSlider(rail, "VRT OShape", 0);
         vrtTravelEnsure(rail);
         var amtChk = vrtMotionSlider(rail, "VRT WAmt");
         var amtV = 0;
@@ -254,7 +255,7 @@ function vrtMotionOrbitStart() {
                 try { if (keepOT0) { effO0 = ot0b.value; } } catch (eEO) {}
                 var oEnd = 0;
                 try { oEnd = ot1b.value; } catch (eOE) { oEnd = 0; }
-                if (!(oEnd > 0 && oEnd > effO0)) { return vrtResp(false, "", "spin count needs End after Start"); }
+                if (!(oEnd > 0 && oEnd > effO0)) { return vrtResp(false, "", "spin span needs End after Start"); }
             }
         }
         if (keepOT0) { return vrtResp(true, "scheduled — spin starts at OT0", ""); }
@@ -279,6 +280,7 @@ function vrtMotionOrbitStop() {
         vrtAddSlider(rail, "VRT OT0", 0);
         vrtAddSlider(rail, "VRT OT1", 0);
         vrtAddSlider(rail, "VRT OMode", 0);
+        vrtAddSlider(rail, "VRT OShape", 0);
         vrtTravelEnsure(rail);
         var progP = vrtMotionSlider(rail, "VRT Prog");
         var spdP = vrtMotionSlider(rail, "VRT Orbit");
@@ -296,7 +298,8 @@ function vrtMotionOrbitStop() {
         var ot0P = vrtMotionSlider(rail, "VRT OT0");
         var ot1P = vrtMotionSlider(rail, "VRT OT1");
         var omodeP = vrtMotionSlider(rail, "VRT OMode");
-        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null || widthP === null || wamtP === null || w0P === null || w1P === null || wdirP === null || wmodeP === null || wshpP === null || ospP === null || ot0P === null || ot1P === null || omodeP === null) { return vrtResp(false, "", "rebuild rail"); }
+        var oshpP = vrtMotionSlider(rail, "VRT OShape");
+        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null || widthP === null || wamtP === null || w0P === null || w1P === null || wdirP === null || wmodeP === null || wshpP === null || ospP === null || ot0P === null || ot1P === null || omodeP === null || oshpP === null) { return vrtResp(false, "", "rebuild rail"); }
         var amtW = 0;
         try { amtW = wamtP.value; } catch (eAW) { amtW = 0; }
         var amtWOn = (amtW > 0 || amtW < 0);
@@ -346,16 +349,23 @@ function vrtMotionOrbitStop() {
             var camS = vrtFindCam(comp);
             if (camS === null) { return vrtResp(false, "", "no camera - press Build"); }
             var oriS = vrtProp(vrtTrans(camS, "camera"), "ADBE Orientation", "Orientation", "orientation");
-            var soT0 = 0, soT1 = 0, soMd = 0;
+            var soT0 = 0, soT1 = 0, soMd = 0, soSh = 0;
             try { soT0 = ot0P.value; } catch (eSO0) {}
             try { soT1 = ot1P.value; } catch (eSO1) {}
             try { soMd = omodeP.value; } catch (eSOM) {}
+            try { soSh = oshpP.value; } catch (eSOH) {}
             var sFr = 0;
             if (comp.time >= soT0) {
-                var sTe = comp.time;
-                if (soMd > 0.5) {
-                    if (soT1 > 0 && soT1 > soT0) { sTe = Math.min(comp.time, soT1); sFr = (sTe - soT0) / (soT1 - soT0); }
-                } else { sFr = sTe - soT0; }
+                if (soSh > 0.5) {
+                    if (soMd > 0.5) {
+                        if (soT1 > 0 && soT1 > soT0) { var soFr = (Math.min(comp.time, soT1) - soT0) / (soT1 - soT0); var soPh2 = soFr * 2; sFr = (soPh2 < 1) ? soPh2 : 2 - soPh2; }
+                    } else {
+                        var soPh = (comp.time - soT0) % 2;
+                        sFr = (soPh < 1) ? soPh : 2 - soPh;
+                    }
+                } else if (soMd > 0.5) {
+                    if (soT1 > 0 && soT1 > soT0) { sFr = (Math.min(comp.time, soT1) - soT0) / (soT1 - soT0); }
+                } else { sFr = comp.time - soT0; }
             }
             var ovS = oriS.value;
             oriS.setValue([ovS[0], ovS[1], ovS[2] + ospW * 360 * sFr]);
@@ -379,6 +389,7 @@ function vrtSpinLink() {
         vrtAddSlider(rail, "VRT OT0", 0);
         vrtAddSlider(rail, "VRT OT1", 0);
         vrtAddSlider(rail, "VRT OMode", 0);
+        vrtAddSlider(rail, "VRT OShape", 0);
         var cam = vrtFindCam(comp);
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
         vrtUnlocked(cam, "camera");
