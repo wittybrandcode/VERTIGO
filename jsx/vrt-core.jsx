@@ -121,7 +121,10 @@ function vrtTurntableExpr() {
         'var t1 = effect("VRT T1")("ADBE Slider Control-0001");' +
         'var te = (t1 > 0 && t1 > t0) ? t1 : 1000000;' +
         'var tt = Math.min(Math.max(time, t0), te);' +
-        'tilt + prog/100*360 + trn*360*(tt - t0);';
+        'var mode = effect("VRT Mode")("ADBE Slider Control-0001");' +
+        'var span = (te > t0) ? (te - t0) : 0;' +
+        'var frac = (mode > 0.5) ? ((span > 0) ? (tt - t0)/span : 0) : (tt - t0);' +
+        'tilt + prog/100*360 + trn*360*frac;';
 }
 
 function vrtRailCamExpr() {

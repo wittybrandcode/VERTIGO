@@ -11,10 +11,22 @@
     if (n) { n.value = v; }
   }
 
+  function syncModeWord(nxt) {
+    var mw = document.getElementById('motion-mode-word');
+    if (mw) { mw.textContent = nxt ? 'Count' : 'Rate'; }
+    var ot = nxt ? 'Orbit turns over Start–End (0 = still)' : 'Orbit turns/sec (0 = still)';
+    var orr = document.getElementById('rail-orbitr');
+    var onn = document.getElementById('rail-orbit');
+    if (orr) { orr.title = ot; }
+    if (onn) { onn.title = ot; }
+  }
+
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1 }; } catch (e) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1, mode: r.mode }; } catch (e) {}
+      try { window.vrtMotionMode = (r.mode > 0.5) ? 1 : 0; } catch (eM) {}
+      syncModeWord(window.vrtMotionMode ? 1 : 0);
       setRailPair('rail-width', r.width); setRailPair('rail-prog', r.prog); setRailPair('rail-height', r.height); setRailPair('rail-tiltx', r.tiltx); setRailPair('rail-tiltz', r.tiltz); setRailPair('rail-orbit', r.orbit);
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
       setRailPair('rail-t0', r.t0); setRailPair('rail-t1', r.t1);
@@ -86,6 +98,23 @@
         });
       });
     });
+    var modeBtn = $('btn-motion-mode');
+    if (modeBtn) {
+      modeBtn.addEventListener('click', function () {
+        var nxt = window.vrtMotionMode ? 0 : 1;
+        window.VRT.busy(modeBtn, true);
+        window.VRT.status('…', 'working');
+        window.VRT.callJSX('vrtRailSet', ['mode', String(nxt)], function (r) {
+          window.VRT.busy(modeBtn, false);
+          if (r.ok) {
+            window.vrtMotionMode = nxt;
+            try { if (window.vrtSnapRail) { window.vrtSnapRail.mode = nxt; } } catch (eS) {}
+            syncModeWord(nxt);
+          }
+          window.VRT.status(r.ok ? ('✓ ' + (nxt ? 'Count' : 'Rate')) : ('! ' + (r.err || 'error')), r.ok ? 'ok' : 'err');
+        });
+      });
+    }
     [['btn-rail-clear', 'vrtRailClear'], ['btn-rail-look', 'vrtRailLook'], ['btn-rail-focus', 'vrtRailFocus'], ['btn-rail-diag', 'vrtRailDiag']].forEach(function (pair) {
       var b = $(pair[0]);
       if (!b) { if (window.console) { console.warn('VERTIGO: missing #' + pair[0]); } return; }

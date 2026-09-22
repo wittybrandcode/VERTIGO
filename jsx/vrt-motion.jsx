@@ -28,7 +28,7 @@ function vrtRailDiag() {
         var rail = vrtRailLayer(comp);
         out[out.length] = "rail:" + (rail === null ? "MISSING" : rail.name);
         if (rail !== null) {
-            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1"];
+            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1", "VRT Mode"];
             var fx = null;
             try { fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "fx"); } catch (eF) { fx = null; }
             var i, j;
@@ -113,6 +113,7 @@ function vrtMotionOrbitStart() {
         vrtAddSlider(rail, "VRT T0", 0);
         vrtAddSlider(rail, "VRT TiltZ", 0);
         vrtAddSlider(rail, "VRT T1", 0);
+        vrtAddSlider(rail, "VRT Mode", 0);
         /* Turntable drive lives on rail Z: static tilt + prog phase + live speed. */
         var zP = vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin");
         var zEx = "";
@@ -120,7 +121,7 @@ function vrtMotionOrbitStart() {
         if (zEx === "") {
             if (zP.numKeys > 0) { return vrtResp(false, "", "rail Z has keyframes - remove first"); }
             zP.expression = vrtTurntableExpr();
-        } else if (zEx.indexOf("VRT T1") < 0) {
+        } else if (zEx.indexOf("VRT T1") < 0 || zEx.indexOf("VRT Mode") < 0) {
             if (zEx.indexOf("VRT TiltZ") >= 0) { zP.expression = vrtTurntableExpr(); }
             else { return vrtResp(false, "", "rail Z has custom expression - clear it first"); }
         }
@@ -134,14 +135,24 @@ function vrtMotionOrbitStart() {
         camPos.expression = vrtRailCamExpr();
         var t0b = vrtMotionSlider(rail, "VRT T0");
         var t1b = vrtMotionSlider(rail, "VRT T1");
+        var modeP = vrtMotionSlider(rail, "VRT Mode");
+        var modeV = 0;
+        if (modeP !== null) { try { modeV = modeP.value; } catch (eMV) { modeV = 0; } }
         /* Respect a scheduled future start; only past/empty T0 becomes now. */
         var keepT0 = false;
         try { if (t0b.value > comp.time) { keepT0 = true; } } catch (eT0) {}
         if (!keepT0 && t0b !== null) { t0b.setValue(comp.time); }
-        if (t1b !== null) {
+        if (!(modeV > 0.5) && t1b !== null) {
             var t1v = 0;
             try { t1v = t1b.value; } catch (eT) { t1v = 0; }
             if (t1v > 0 && t1v <= comp.time) { t1b.setValue(0); }
+        }
+        if (modeV > 0.5) {
+            var effT0 = comp.time;
+            try { if (keepT0) { effT0 = t0b.value; } } catch (eET) {}
+            var endV = 0;
+            if (t1b !== null) { try { endV = t1b.value; } catch (eEV) { endV = 0; } }
+            if (!(endV > 0 && endV > effT0)) { return vrtResp(false, "", "count mode needs End after Start"); }
         }
         if (keepT0) { return vrtResp(true, "scheduled — starts at T0", ""); }
         return vrtResp(true, "running — Stop to freeze", "");
@@ -160,6 +171,7 @@ function vrtMotionOrbitStop() {
         vrtAddSlider(rail, "VRT T0", 0);
         vrtAddSlider(rail, "VRT TiltZ", 0);
         vrtAddSlider(rail, "VRT T1", 0);
+        vrtAddSlider(rail, "VRT Mode", 0);
         var progP = vrtMotionSlider(rail, "VRT Prog");
         var spdP = vrtMotionSlider(rail, "VRT Orbit");
         var t0P = vrtMotionSlider(rail, "VRT T0");

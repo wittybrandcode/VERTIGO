@@ -79,6 +79,7 @@ function vrtRailBuild() {
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
         vrtAddSlider(rail, "VRT T1", 0);
+        vrtAddSlider(rail, "VRT Mode", 0);
         vrtAddSlider(rail, "VRT TiltZ", tiltInit);
         vrtRailRestore(rail, keep);
         vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin").expression = vrtTurntableExpr();
@@ -124,7 +125,7 @@ function vrtRailSet(param, valueS) {
         var i, found = null;
         for (i = 1; i <= fx.numProperties; i++) {
             var e = fx.property(i);
-            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1")) { found = e; break; }
+            if ((param === "width" && e.name === "VRT Width") || (param === "prog" && e.name === "VRT Prog") || (param === "height" && e.name === "VRT Height") || (param === "tiltz" && e.name === "VRT TiltZ") || (param === "orbit" && e.name === "VRT Orbit") || (param === "t0" && e.name === "VRT T0") || (param === "t1" && e.name === "VRT T1") || (param === "mode" && e.name === "VRT Mode")) { found = e; break; }
         }
         if (found === null) { return vrtResp(false, "", "rebuild rail"); }
         if (param === "width") {
@@ -144,7 +145,7 @@ function vrtRailGet() {
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
         var rp = vrtProp(vrtTrans(rail, "rail"), "ADBE Position", "Position", "position on rail").value;
-        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"]];
+        var want = [["width", "VRT Width"], ["prog", "VRT Prog"], ["height", "VRT Height"], ["orbit", "VRT Orbit"], ["tiltz", "VRT TiltZ"], ["t0", "VRT T0"], ["t1", "VRT T1"], ["mode", "VRT Mode"]];
         var fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "effects on rail");
         var got = {};
         var i, j;
@@ -154,11 +155,11 @@ function vrtRailGet() {
                 if (e.name === want[j][1]) { got[want[j][0]] = vrtProp(e, "ADBE Slider Control-0001", "Slider", "rail slider").value; }
             }
         }
-        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined) { return vrtResp(false, "", "rebuild rail"); }
+        if (got.width === undefined || got.prog === undefined || got.height === undefined || got.orbit === undefined || got.tiltz === undefined || got.t0 === undefined || got.t1 === undefined || got.mode === undefined) { return vrtResp(false, "", "rebuild rail"); }
         var rt = vrtTrans(rail, "rail");
         var txv = vrtProp(rt, "ADBE Rotate X", "X Rotation", "tilt X").value;
         return '{"ok":true,"x":' + rp[0] + ',"y":' + rp[1] + ',"z":' + rp[2] +
-            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + '}';
+            ',"width":' + got.width + ',"prog":' + got.prog + ',"height":' + got.height + ',"tiltx":' + txv + ',"tiltz":' + got.tiltz + ',"orbit":' + got.orbit + ',"t0":' + got.t0 + ',"t1":' + got.t1 + ',"mode":' + got.mode + '}';
     } catch (e) { return vrtResp(false, "", "rail: " + e.toString()); }
 }
 
