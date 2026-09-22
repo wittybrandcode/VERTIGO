@@ -51,8 +51,8 @@ function vrtRailDiag() {
                 var zPr = vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin");
                 var zEx2 = "";
                 try { zEx2 = zPr.expression; } catch (eZ2) { zEx2 = ""; }
-                if (zEx2.indexOf("VRT TiltZ") >= 0) { zt = "turntable"; }
-                else if (zEx2 !== "") { zt = "custom"; }
+                if (zEx2.indexOf("VRT T1") >= 0) { zt = "turntable"; }
+                else if (zEx2 !== "") { zt = "OLD-TEMPLATE"; }
             } catch (eZT) {}
             var zer = "";
             try {
@@ -107,7 +107,7 @@ function vrtMotionOrbitStart() {
         var spdChk = vrtMotionSlider(rail, "VRT Orbit");
         var spdV = 0;
         if (spdChk !== null) { try { spdV = spdChk.value; } catch (eSV) { spdV = 0; } }
-        if (!(spdV > 0 || spdV < 0)) { return vrtResp(false, "", "set Orbit speed first (e.g. 30)"); }
+        if (!(spdV > 0 || spdV < 0)) { return vrtResp(false, "", "set Orbit speed first (e.g. 0.5)"); }
         /* Self-heal: ensure motion sliders (old rails lack them). */
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
@@ -120,8 +120,9 @@ function vrtMotionOrbitStart() {
         if (zEx === "") {
             if (zP.numKeys > 0) { return vrtResp(false, "", "rail Z has keyframes - remove first"); }
             zP.expression = vrtTurntableExpr();
-        } else if (zEx.indexOf("VRT TiltZ") < 0) {
-            return vrtResp(false, "", "rail Z has custom expression - clear it first");
+        } else if (zEx.indexOf("VRT T1") < 0) {
+            if (zEx.indexOf("VRT TiltZ") >= 0) { zP.expression = vrtTurntableExpr(); }
+            else { return vrtResp(false, "", "rail Z has custom expression - clear it first"); }
         }
         var cam = vrtFindCam(comp);
         if (cam === null) { return vrtResp(false, "", "no camera - press Build"); }
