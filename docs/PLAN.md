@@ -16,7 +16,7 @@ VERTIGO/
 │   ├── forms.css            # inputs/labels/focus/disabled
 │   ├── cards.css            # المجموعات والصفوف (prow/prow3/axis/rst/grst)
 │   ├── debug.css            # درج السجل
-│   └── panel.css            # @import بالترتيب أعلاه فقط — عقد التتالي
+│   └── vrt.css                # @import بالترتيب أعلاه فقط — عقد التتالي
 ├── js/
 │   ├── CSInterface.js       # vendor — ممنوع اللمس
 │   ├── vrt-bridge.js        # البيئة + evalScript + الحالة (يسجل window.VRT)
