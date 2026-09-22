@@ -218,14 +218,14 @@ function vrtMotionOrbitStart() {
         if (omP !== null) { try { omV = omP.value; } catch (eOM) { omV = 0; } }
         /* Respect a scheduled future start; only past/empty T0 becomes now. */
         var keepT0 = false;
-        try { if (t0b.value > comp.time) { keepT0 = true; } } catch (eT0) {}
+        if (spdOn) { try { if (t0b.value > comp.time) { keepT0 = true; } } catch (eT0) {} }
         if (!keepT0 && t0b !== null && spdOn) { t0b.setValue(comp.time); }
         if (!(modeV > 0.5) && t1b !== null) {
             var t1v = 0;
             try { t1v = t1b.value; } catch (eT) { t1v = 0; }
             if (t1v > 0 && t1v <= comp.time) { t1b.setValue(0); }
         }
-        if (modeV > 0.5) {
+        if (spdOn && modeV > 0.5) {
             var effT0 = comp.time;
             try { if (keepT0) { effT0 = t0b.value; } } catch (eET) {}
             var endV = 0;
@@ -287,6 +287,7 @@ function vrtMotionOrbitStop() {
         var t0P = vrtMotionSlider(rail, "VRT T0");
         var tiltP = vrtMotionSlider(rail, "VRT TiltZ");
         var t1P = vrtMotionSlider(rail, "VRT T1");
+        var modeStopP = vrtMotionSlider(rail, "VRT Mode");
         var widthP = vrtMotionSlider(rail, "VRT Width");
         var wamtP = vrtMotionSlider(rail, "VRT WAmt");
         var w0P = vrtMotionSlider(rail, "VRT W0");
@@ -299,23 +300,39 @@ function vrtMotionOrbitStop() {
         var ot1P = vrtMotionSlider(rail, "VRT OT1");
         var omodeP = vrtMotionSlider(rail, "VRT OMode");
         var oshpP = vrtMotionSlider(rail, "VRT OShape");
-        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null || widthP === null || wamtP === null || w0P === null || w1P === null || wdirP === null || wmodeP === null || wshpP === null || ospP === null || ot0P === null || ot1P === null || omodeP === null || oshpP === null) { return vrtResp(false, "", "rebuild rail"); }
+        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null || modeStopP === null || widthP === null || wamtP === null || w0P === null || w1P === null || wdirP === null || wmodeP === null || wshpP === null || ospP === null || ot0P === null || ot1P === null || omodeP === null || oshpP === null) { return vrtResp(false, "", "rebuild rail"); }
+        var modeStopV = 0;
+        try { modeStopV = modeStopP.value; } catch (eMS) {}
         var amtW = 0;
         try { amtW = wamtP.value; } catch (eAW) { amtW = 0; }
         var amtWOn = (amtW > 0 || amtW < 0);
         var ospW = 0;
         try { ospW = ospP.value; } catch (eOW) { ospW = 0; }
         var spinWOn = (ospW > 0 || ospW < 0);
-        if (comp.time <= t0P.value && !amtWOn && !spinWOn) {
-            spdP.setValue(0);
+        var wS0 = 0;
+        try { wS0 = w0P.value; } catch (eWS0) {}
+        var oS0 = 0;
+        try { oS0 = ot0P.value; } catch (eOS0) {}
+        var oStarted = (comp.time > t0P.value);
+        var wStarted = amtWOn && comp.time >= wS0;
+        var sStarted = spinWOn && comp.time >= oS0;
+        if (!oStarted && !wStarted && !sStarted) {
+            if (spdP.value > 0 || spdP.value < 0) { spdP.setValue(0); }
+            if (amtWOn) { wamtP.setValue(0); }
+            if (spinWOn) { ospP.setValue(0); }
             return vrtResp(true, "stopped before start", "");
         }
+        if (!oStarted) { if (spdP.value > 0 || spdP.value < 0) { spdP.setValue(0); } } else {
         var te = comp.time;
         if (t1P.value > 0 && t1P.value > t0P.value && comp.time > t1P.value) { te = t1P.value; }
-        var cur = tiltP.value + progP.value / 100 * 360 + spdP.value * 360 * (te - t0P.value);
+        var frO = te - t0P.value;
+        if (modeStopV > 0.5) { if (t1P.value > 0 && t1P.value > t0P.value) { frO = (te - t0P.value) / (t1P.value - t0P.value); } else { frO = 0; } }
+        var cur = tiltP.value + progP.value / 100 * 360 + spdP.value * 360 * frO;
         var norm = ((cur % 360) + 360) % 360;
         progP.setValue(norm / 360 * 100);
-        if (amtWOn) {
+        spdP.setValue(0);
+        }
+        if (amtWOn && wStarted) {
             var wsgW = 1;
             try { if (wdirP.value < 0) { wsgW = -1; } } catch (eWD) {}
             var s0W = 0, s1W = 0, wmW = 0, shpW = 1, baseW = 0;
@@ -343,8 +360,8 @@ function vrtMotionOrbitStop() {
                 }
             }
             widthP.setValue(baseW + wdtW);
-            wamtP.setValue(0);
         }
+        if (amtWOn) { wamtP.setValue(0); }
         if (spinWOn) {
             var camS = vrtFindCam(comp);
             if (camS === null) { return vrtResp(false, "", "no camera - press Build"); }
@@ -368,10 +385,9 @@ function vrtMotionOrbitStop() {
                 } else { sFr = comp.time - soT0; }
             }
             var ovS = oriS.value;
-            oriS.setValue([ovS[0], ovS[1], ovS[2] + ospW * 360 * sFr]);
+            if (sStarted) { oriS.setValue([ovS[0], ovS[1], ovS[2] + ospW * 360 * sFr]); }
             ospP.setValue(0);
         }
-        spdP.setValue(0);
         return vrtResp(true, "frozen", "");
     } catch (e) { return vrtResp(false, "", "stop: " + e.toString()); }
     finally { app.endUndoGroup(); }
