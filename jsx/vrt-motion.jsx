@@ -82,6 +82,11 @@ function vrtMotionOrbitStart() {
         if (comp === null) { return vrtResp(false, "", "no comp - open a composition first"); }
         var rail = vrtRailLayer(comp);
         if (rail === null) { return vrtResp(false, "", "build rail first"); }
+        /* Zero speed = designed stillness, not a bug — refuse loudly instead. */
+        var spdChk = vrtMotionSlider(rail, "VRT Orbit");
+        var spdV = 0;
+        if (spdChk !== null) { try { spdV = spdChk.value; } catch (eSV) { spdV = 0; } }
+        if (!(spdV > 0 || spdV < 0)) { return vrtResp(false, "", "set Orbit speed first (e.g. 30)"); }
         /* Self-heal: ensure motion sliders (old rails lack them). */
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
