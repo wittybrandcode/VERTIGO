@@ -1,8 +1,8 @@
 /* VERTIGO panel — import order IS the cascade contract. Do not reorder. */
-@import url("tokens.css");
-@import url("base.css");
-@import url("header.css");
-@import url("buttons.css");
-@import url("forms.css");
-@import url("cards.css");
-@import url("debug.css");
+@import url("vrt-tokens.css");
+@import url("vrt-base.css");
+@import url("vrt-header.css");
+@import url("vrt-buttons.css");
+@import url("vrt-forms.css");
+@import url("vrt-cards.css");
+@import url("vrt-debug.css");

@@ -9,13 +9,13 @@ VERTIGO/
 ├── CSXS/manifest.xml        # ثابت (لا يُلمس إلا لإصدار)
 ├── index.html               # هيكل فقط + <link> + <script> (بلا CSS/JS مضمن)
 ├── css/                     # نظام التصميم (HS Industrial Slate)
-│   ├── tokens.css           # متغيرات فقط — مجمدة
-│   ├── base.css             # reset/body/scrollbar/footer/status
-│   ├── header.css           # الهيدر والشعار
-│   ├── buttons.css          # .ibtn ومتغيراته والحالات
-│   ├── forms.css            # inputs/labels/focus/disabled
-│   ├── cards.css            # المجموعات والصفوف (prow/prow3/axis/rst/grst)
-│   ├── debug.css            # درج السجل
+│   ├── vrt-tokens.css       # متغيرات فقط — مجمدة
+│   ├── vrt-base.css         # reset/body/scrollbar/footer/status
+│   ├── vrt-header.css       # الهيدر والشعار
+│   ├── vrt-buttons.css      # .ibtn ومتغيراته والحالات
+│   ├── vrt-forms.css        # inputs/labels/focus/disabled
+│   ├── vrt-cards.css        # المجموعات والصفوف (prow/prow3/axis/rst/grst)
+│   ├── vrt-debug.css        # درج السجل
 │   └── vrt.css                # @import بالترتيب أعلاه فقط — عقد التتالي
 ├── js/
 │   ├── CSInterface.js       # vendor — ممنوع اللمس
