@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  var RAIL_BASE = { 'rail-width': 'width', 'rail-prog': 'prog', 'rail-height': 'height', 'rail-tiltx': 'tiltx', 'rail-tiltz': 'tiltz', 'rail-orbit': 'orbit', 'rail-x': 'x', 'rail-y': 'y', 'rail-z': 'z' };
+  var RAIL_BASE = { 'rail-width': 'width', 'rail-prog': 'prog', 'rail-height': 'height', 'rail-tiltx': 'tiltx', 'rail-tiltz': 'tiltz', 'rail-orbit': 'orbit', 'rail-t0': 't0', 'rail-t1': 't1', 'rail-x': 'x', 'rail-y': 'y', 'rail-z': 'z' };
 
   /* One row may hold several properties (XYZ merged) — reset them all. */
   function resetRow(row, cb) {

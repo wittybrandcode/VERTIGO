@@ -28,7 +28,7 @@ function vrtRailDiag() {
         var rail = vrtRailLayer(comp);
         out[out.length] = "rail:" + (rail === null ? "MISSING" : rail.name);
         if (rail !== null) {
-            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0"];
+            var names = ["VRT Width", "VRT Prog", "VRT Height", "VRT Orbit", "VRT T0", "VRT T1"];
             var fx = null;
             try { fx = vrtProp(rail, "ADBE Effect Parade", "Effects", "fx"); } catch (eF) { fx = null; }
             var i, j;
@@ -60,6 +60,20 @@ function vrtRailDiag() {
                 try { zer = zPe.expressionError; } catch (eZE) { zer = ""; }
             } catch (eZF) {}
             out[out.length] = "railZ:" + zt + (zer !== "" ? " ERR:" + zer : "");
+            var ph = "still";
+            try {
+                var qT0 = vrtMotionSlider(rail, "VRT T0");
+                var qT1 = vrtMotionSlider(rail, "VRT T1");
+                var qSp = vrtMotionSlider(rail, "VRT Orbit");
+                if (qT0 !== null && qT1 !== null && qSp !== null) {
+                    var vT0 = qT0.value, vT1 = qT1.value, vSp = qSp.value;
+                    if (!(vSp > 0 || vSp < 0)) { ph = "still"; }
+                    else if (comp.time < vT0) { ph = "pending"; }
+                    else if (vT1 > 0 && vT1 > vT0 && comp.time > vT1) { ph = "ended"; }
+                    else { ph = "running"; }
+                }
+            } catch (ePH) {}
+            out[out.length] = "phase:" + ph;
         }
         var cam = vrtFindCam(comp);
         out[out.length] = "cam:" + (cam === null ? "NONE" : cam.name);
@@ -98,6 +112,7 @@ function vrtMotionOrbitStart() {
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
         vrtAddSlider(rail, "VRT TiltZ", 0);
+        vrtAddSlider(rail, "VRT T1", 0);
         /* Turntable drive lives on rail Z: static tilt + prog phase + live speed. */
         var zP = vrtProp(vrtTrans(rail, "rail"), "ADBE Rotate Z", "Rotation", "spin");
         var zEx = "";
@@ -117,7 +132,13 @@ function vrtMotionOrbitStart() {
         if (ex !== "" && ex.indexOf("VRT_Rail") < 0) { return vrtResp(false, "", "camera Position has custom expression - clear it first"); }
         camPos.expression = vrtRailCamExpr();
         var t0b = vrtMotionSlider(rail, "VRT T0");
+        var t1b = vrtMotionSlider(rail, "VRT T1");
         t0b.setValue(comp.time);
+        if (t1b !== null) {
+            var t1v = 0;
+            try { t1v = t1b.value; } catch (eT) { t1v = 0; }
+            if (t1v > 0 && t1v <= comp.time) { t1b.setValue(0); }
+        }
         return vrtResp(true, "running — Stop to freeze", "");
     } catch (e) { return vrtResp(false, "", "run: " + e.toString()); }
     finally { app.endUndoGroup(); }
@@ -133,12 +154,16 @@ function vrtMotionOrbitStop() {
         vrtAddSlider(rail, "VRT Orbit", 0);
         vrtAddSlider(rail, "VRT T0", 0);
         vrtAddSlider(rail, "VRT TiltZ", 0);
+        vrtAddSlider(rail, "VRT T1", 0);
         var progP = vrtMotionSlider(rail, "VRT Prog");
         var spdP = vrtMotionSlider(rail, "VRT Orbit");
         var t0P = vrtMotionSlider(rail, "VRT T0");
         var tiltP = vrtMotionSlider(rail, "VRT TiltZ");
-        if (progP === null || spdP === null || t0P === null || tiltP === null) { return vrtResp(false, "", "rebuild rail"); }
-        var cur = tiltP.value + progP.value / 100 * 360 + spdP.value * (comp.time - t0P.value);
+        var t1P = vrtMotionSlider(rail, "VRT T1");
+        if (progP === null || spdP === null || t0P === null || tiltP === null || t1P === null) { return vrtResp(false, "", "rebuild rail"); }
+        var te = comp.time;
+        if (t1P.value > 0 && t1P.value > t0P.value && comp.time > t1P.value) { te = t1P.value; }
+        var cur = tiltP.value + progP.value / 100 * 360 + spdP.value * 360 * (te - t0P.value);
         var norm = ((cur % 360) + 360) % 360;
         progP.setValue(norm / 360 * 100);
         spdP.setValue(0);

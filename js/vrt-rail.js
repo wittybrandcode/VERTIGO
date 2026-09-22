@@ -14,15 +14,16 @@
   function refreshRail(silent) {
     window.VRT.callJSX('vrtRailGet', [], function (r) {
       if (!r.ok) { if (!silent) { window.VRT.status('! ' + r.err, 'err'); } return; }
-      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit }; } catch (e) {}
+      try { window.vrtSnapRail = { x: r.x, y: r.y, z: r.z, width: r.width, prog: r.prog, height: r.height, tiltx: r.tiltx, tiltz: r.tiltz, orbit: r.orbit, t0: r.t0, t1: r.t1 }; } catch (e) {}
       setRailPair('rail-width', r.width); setRailPair('rail-prog', r.prog); setRailPair('rail-height', r.height); setRailPair('rail-tiltx', r.tiltx); setRailPair('rail-tiltz', r.tiltz); setRailPair('rail-orbit', r.orbit);
       setRailPair('rail-x', r.x); setRailPair('rail-y', r.y); setRailPair('rail-z', r.z);
+      setRailPair('rail-t0', r.t0); setRailPair('rail-t1', r.t1);
       if (!silent) { window.VRT.status('✓ rail', 'ok'); }
     });
   }
 
   function railInit($) {
-    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
+    [['rail-width', 'width'], ['rail-prog', 'prog'], ['rail-height', 'height'], ['rail-tiltx', 'tiltx'], ['rail-tiltz', 'tiltz'], ['rail-orbit', 'orbit'], ['rail-t0', 't0'], ['rail-t1', 't1'], ['rail-x', 'x'], ['rail-y', 'y'], ['rail-z', 'z']].forEach(function (pair) {
       var rid = document.getElementById(pair[0] + 'r');
       var nid = document.getElementById(pair[0]);
       function sendRail(quiet) {

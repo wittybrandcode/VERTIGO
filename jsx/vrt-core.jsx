@@ -116,9 +116,12 @@ function vrtAddSlider(layer, name, val) {
 function vrtTurntableExpr() {
     return 'var tilt = effect("VRT TiltZ")("ADBE Slider Control-0001");' +
         'var prog = effect("VRT Prog")("ADBE Slider Control-0001");' +
-        'var spd = effect("VRT Orbit")("ADBE Slider Control-0001");' +
+        'var trn = effect("VRT Orbit")("ADBE Slider Control-0001");' +
         'var t0 = effect("VRT T0")("ADBE Slider Control-0001");' +
-        'tilt + prog/100*360 + spd*(time - t0);';
+        'var t1 = effect("VRT T1")("ADBE Slider Control-0001");' +
+        'var te = (t1 > 0 && t1 > t0) ? t1 : 1000000;' +
+        'var tt = Math.min(Math.max(time, t0), te);' +
+        'tilt + prog/100*360 + trn*360*(tt - t0);';
 }
 
 function vrtRailCamExpr() {
