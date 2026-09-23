@@ -1,11 +1,14 @@
 /* VERTIGO debug drawer — call log (gray/white/wine). */
-#sec-debug { margin: 0 12px 8px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; }
-#sec-debug .row { margin-bottom: 6px; }
+#sec-debug { margin: 0 12px 8px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 8px; display: flex; flex-direction: column; gap: 6px; }
+#sec-debug .row { margin-bottom: 0; background: var(--bg-inset); border: 1px solid var(--border); padding: 2px; gap: 2px; }
 #vrt-log {
   list-style: none; max-height: 120px; overflow-y: auto;
-  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 6px 8px; font: 10px/1.6 ui-monospace, Consolas, monospace;
+  background: var(--bg-log); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 6px 8px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 8.5px; line-height: 1.5; color: var(--text-secondary);
 }
+#vrt-log:empty::after { content: "log ready"; color: var(--text-dim); }
 #vrt-log li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #vrt-log li.lg-call { color: var(--muted); }
 #vrt-log li.lg-ok { color: var(--text); }

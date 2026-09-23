@@ -1,11 +1,64 @@
 /* VERTIGO forms — text/number/range/checkbox + labels + focus/disabled. */
 input[type="text"], input[type="number"] {
-  height: 34px; padding: 0 8px;
-  background: var(--bg); color: var(--text);
+  height: 30px; padding: 0 8px;
+  background: var(--bg-input); color: var(--bright);
   border: 1px solid var(--border); border-radius: var(--radius);
-  font: inherit; font-weight: 700; text-align: right;
+  font-family: inherit; font-size: 11.5px; font-weight: 700; text-align: right;
+  outline: none;
+  transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
 }
-input[type="text"]:focus, input[type="number"]:focus { border-color: var(--focus); outline: none; }
-input[type="range"] { accent-color: var(--coke); }
-input[type="checkbox"] { accent-color: var(--coke); width: 16px; height: 16px; }
-input:disabled { opacity: .35; }
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+input[type="text"]:hover, input[type="number"]:hover { background: var(--bg-input-hover); border-color: var(--border-hi); }
+input[type="text"]:focus, input[type="number"]:focus {
+  background: var(--bg-input-focus); border-color: var(--focus);
+  box-shadow: 0 0 0 1px rgba(91, 141, 239, 0.35);
+  outline: none;
+}
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 14px; min-height: 14px; background: transparent; cursor: ew-resize;
+  outline: none; outline-offset: 0;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 3px; background: var(--bg-surface-hi); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 12px; height: 12px; margin-top: -4.5px;
+  background: var(--coke); border: 1px solid var(--coke);
+  transition: background var(--t-fast), border-color var(--t-fast), transform 0.10s ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb { background: var(--coke-hi); border-color: var(--coke-hi); }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.9); }
+input[type="range"]::-moz-range-track { height: 3px; background: var(--bg-surface-hi); }
+input[type="range"]::-moz-range-progress { height: 3px; background: var(--coke); }
+input[type="range"]::-moz-range-thumb {
+  width: 10px; height: 10px; background: var(--coke); border: 1px solid var(--coke); border-radius: 0;
+}
+input[type="range"]:hover::-moz-range-thumb { background: var(--coke-hi); border-color: var(--coke-hi); }
+input[type="range"]:focus-visible { outline: 1px solid var(--focus); outline-offset: 2px; }
+input[type="checkbox"] {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; flex: none; cursor: pointer;
+  background: var(--bg-input); border: 1px solid var(--border);
+  display: inline-grid; place-content: center;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+input[type="checkbox"]:hover { background: var(--bg-input-hover); border-color: var(--border-hi); }
+input[type="checkbox"]:checked { background: var(--coke); border-color: var(--coke); }
+input[type="checkbox"]:checked::before {
+  content: ""; width: 8px; height: 5px;
+  border-left: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
+  transform: rotate(-45deg) translateY(-1px);
+}
+input[type="checkbox"]:focus-visible { outline: 1px solid var(--focus); outline-offset: 1px; }
+input:disabled { opacity: 0.35; }
+.row.prow .w, .row.prow3 .axis .cw {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase;
+  color: var(--muted);
+}
+.row.prow3 .axrow .ax {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 8.5px; font-weight: 700; color: var(--text-dim);
+}

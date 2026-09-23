@@ -14,22 +14,22 @@
       <path d="M11.5 9.4 a2.1 2.1 0 1 1 -1.5 0.6"/><circle cx="11.5" cy="11.5" r="0.9" fill="#FFFFFF" stroke="none"/>
     </svg>
     <span class="name">VERTIGO</span>
-    <button class="ibtn" id="btn-debug" title="Debug log" style="margin-left:auto;min-height:30px;flex-direction:row;"><span class="g">&lt;/&gt;</span><span class="w">Log</span></button>
+    <button class="ibtn" id="btn-debug" title="Debug log" style="margin-left:auto;min-height:30px;flex-direction:row;"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M6 4 2.5 8 6 12M10 4l3.5 4L10 12"/></svg></span><span class="w">Log</span></button>
     <span class="ver">v1.0</span>
   </header>
 
   <section id="sec-cam">
     <div class="row">
-      <button class="ibtn primary" id="btn-cam-build" title="Create camera or link existing"><span class="g">＋</span><span class="w">Build</span></button>
-      <button class="ibtn" id="btn-cam-link" title="Link selected camera"><span class="g">⇥</span><span class="w">Link</span></button>
-      <button class="ibtn" id="btn-cam-refresh" title="Read camera values"><span class="g">⟳</span><span class="w">Read</span></button>
+      <button class="ibtn primary" id="btn-cam-build" title="Create camera or link existing"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11"/></svg></span><span class="w">Build</span></button>
+      <button class="ibtn" id="btn-cam-link" title="Link selected camera"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M9.5 3.5H3.5v9h6"/><path d="M6.5 8h6M10.5 5.5 13 8l-2.5 2.5"/></svg></span><span class="w">Link</span></button>
+      <button class="ibtn" id="btn-cam-refresh" title="Read camera values"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 1.8v3h-3"/></svg></span><span class="w">Read</span></button>
     </div>
     <div class="row"><span id="cam-name" title="Linked camera">—</span></div>
   </section>
 
   <main>
     <details class="camgroup" open>
-      <summary>TRANSFORM<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>TRANSFORM<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow prow3"><span class="w">Pos</span><div class="axis"><input id="pos0r" data-prop="pos" data-i="0" data-dims="3" type="range" min="-4000" max="4000" step="1" value="0" title="Position X"><div class="axrow"><span class="ax">X</span><input id="pos0" data-prop="pos" data-i="0" data-dims="3" type="number" step="1" value="0" title="Position X"></div></div><div class="axis"><input id="pos1r" data-prop="pos" data-i="1" data-dims="3" type="range" min="-4000" max="4000" step="1" value="0" title="Position Y"><div class="axrow"><span class="ax">Y</span><input id="pos1" data-prop="pos" data-i="1" data-dims="3" type="number" step="1" value="0" title="Position Y"></div></div><div class="axis"><input id="pos2r" data-prop="pos" data-i="2" data-dims="3" type="range" min="-4000" max="4000" step="1" value="0" title="Position Z"><div class="axrow"><span class="ax">Z</span><input id="pos2" data-prop="pos" data-i="2" data-dims="3" type="number" step="1" value="0" title="Position Z"></div></div></div>
         <div class="row prow prow3"><span class="w">POI</span><div class="axis"><input id="poi0r" data-prop="poi" data-i="0" data-dims="3" type="range" min="-4000" max="4000" step="1" value="0" title="Point of Interest X"><div class="axrow"><span class="ax">X</span><input id="poi0" data-prop="poi" data-i="0" data-dims="3" type="number" step="1" value="0" title="Point of Interest X"></div></div><div class="axis"><input id="poi1r" data-prop="poi" data-i="1" data-dims="3" type="range" min="-4000" max="4000" step="1" value="0" title="Point of Interest Y"><div class="axrow"><span class="ax">Y</span><input id="poi1" data-prop="poi" data-i="1" data-dims="3" type="number" step="1" value="0" title="Point of Interest Y"></div></div><div class="axis"><input id="poi2r" data-prop="poi" data-i="2" data-dims="3" type="range" min="-4000" max="4000" step="1" value="0" title="Point of Interest Z"><div class="axrow"><span class="ax">Z</span><input id="poi2" data-prop="poi" data-i="2" data-dims="3" type="number" step="1" value="0" title="Point of Interest Z"></div></div></div>
@@ -41,14 +41,14 @@
 
   <section id="sec-track">
     <div class="row">
-      <button class="ibtn" id="btn-track-set" title="Track selected layer (look + focus)"><span class="g">◎</span><span class="w">Track</span></button>
-      <button class="ibtn" id="btn-track-clear" title="Stop tracking"><span class="g">✕</span><span class="w">Untrack</span></button>
+      <button class="ibtn" id="btn-track-set" title="Track selected layer (look + focus)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="w">Track</span></button>
+      <button class="ibtn" id="btn-track-clear" title="Stop tracking"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></span><span class="w">Untrack</span></button>
     </div>
     <div class="row"><span id="track-name" title="Tracking target">—</span></div>
   </section>
 
     <details class="camgroup" open>
-      <summary>LENS<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>LENS<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow prow3"><div class="axis"><span class="cw">Zoom</span><input id="zoom0r" data-prop="zoom" data-i="0" data-dims="1" type="range" min="10" max="5000" step="1" value="1000" title="Zoom"><input id="zoom0" data-prop="zoom" data-i="0" data-dims="1" type="number" step="1" value="1000" title="Zoom"></div><div class="axis"><span class="cw">Focus</span><input id="focus0r" data-prop="focus" data-i="0" data-dims="1" type="range" min="0" max="30000" step="10" value="5000" title="Focus Distance"><input id="focus0" data-prop="focus" data-i="0" data-dims="1" type="number" step="10" value="5000" title="Focus Distance"></div><div class="axis"><span class="cw">Aperture</span><input id="aperture0r" data-prop="aperture" data-i="0" data-dims="1" type="range" min="0.5" max="64" step="0.1" value="8" title="Aperture"><input id="aperture0" data-prop="aperture" data-i="0" data-dims="1" type="number" step="0.1" value="8" title="Aperture"></div></div>
         <div class="row prow"><span class="w">Blur</span><input id="blur0r" data-prop="blur" data-i="0" data-dims="1" type="range" min="0" max="100" step="1" value="0" title="Blur Level"><input id="blur0" data-prop="blur" data-i="0" data-dims="1" type="number" step="1" value="0" title="Blur Level"></div>
@@ -57,7 +57,7 @@
     </details>
 
     <details class="camgroup">
-      <summary>IRIS &amp; LIGHT<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>IRIS &amp; LIGHT<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow prow3"><div class="axis"><span class="cw">Shape</span><input id="irisShape0r" data-prop="irisShape" data-i="0" data-dims="1" type="range" min="1" max="6" step="1" value="6" title="Iris Shape"><input id="irisShape0" data-prop="irisShape" data-i="0" data-dims="1" type="number" step="1" value="6" title="Iris Shape"></div><div class="axis"><span class="cw">Rot</span><input id="irisRot0r" data-prop="irisRot" data-i="0" data-dims="1" type="range" min="-180" max="180" step="1" value="0" title="Iris Rotation"><input id="irisRot0" data-prop="irisRot" data-i="0" data-dims="1" type="number" step="1" value="0" title="Iris Rotation"></div><div class="axis"><span class="cw">Round</span><input id="irisRound0r" data-prop="irisRound" data-i="0" data-dims="1" type="range" min="0" max="100" step="1" value="0" title="Iris Roundness"><input id="irisRound0" data-prop="irisRound" data-i="0" data-dims="1" type="number" step="1" value="0" title="Iris Roundness"></div></div>
         <div class="row prow prow3"><div class="axis"><span class="cw">Aspect</span><input id="irisAspect0r" data-prop="irisAspect" data-i="0" data-dims="1" type="range" min="10" max="200" step="1" value="100" title="Iris Aspect Ratio"><input id="irisAspect0" data-prop="irisAspect" data-i="0" data-dims="1" type="number" step="1" value="100" title="Iris Aspect Ratio"></div><div class="axis"><span class="cw">Gain</span><input id="hiGain0r" data-prop="hiGain" data-i="0" data-dims="1" type="range" min="0" max="200" step="1" value="0" title="Highlight Gain"><input id="hiGain0" data-prop="hiGain" data-i="0" data-dims="1" type="number" step="1" value="0" title="Highlight Gain"></div><div class="axis"><span class="cw">Thresh</span><input id="hiThresh0r" data-prop="hiThresh" data-i="0" data-dims="1" type="range" min="0" max="255" step="1" value="128" title="Highlight Threshold"><input id="hiThresh0" data-prop="hiThresh" data-i="0" data-dims="1" type="number" step="1" value="128" title="Highlight Threshold"></div></div>
@@ -66,64 +66,64 @@
     </details>
 
     <details class="camgroup">
-      <summary>SPIN<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>SPIN<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow prow3"><span class="w">Turns</span><div class="axis"><input id="rail-osptr" type="range" min="-5" max="5" step="1" value="0" title="Spin full turns (integer)"><div class="axrow"><span class="ax">x</span><input id="rail-ospt" type="number" step="1" value="0" title="Spin full turns (integer)"></div></div><div class="axis"><input id="rail-ospdegr" type="range" min="0" max="360" step="1" value="0" title="Spin extra degrees (0-360)"><div class="axrow"><span class="ax">°</span><input id="rail-ospdeg" type="number" step="1" value="0" title="Spin extra degrees (0-360)"></div></div></div>
         <div class="row prow"><span class="w">Start</span><input id="rail-ot0" type="number" step="0.5" value="0" title="Spin start (sec, auto on Run)"></div>
         <div class="row prow"><span class="w">End</span><input id="rail-ot1" type="number" step="0.5" value="0" title="Spin end (sec, 0 = infinite)"></div>
         <div class="row">
-          <button class="ibtn" id="btn-spin-link" title="Attach/detach spin (bakes angle on detach)"><span class="g">⇥</span><span class="w" id="spin-link-word">Link</span></button>
-          <button class="ibtn" id="btn-spin-mode" title="Spin basis: Rate (turns/sec) or Count (turns over Start–End)"><span class="g">⇄</span><span class="w" id="spin-mode-word">Rate</span></button>
-          <button class="ibtn" id="btn-spin-shape" title="Spin shape: Ramp (one way) or Wave (pendulum)"><span class="g">〜</span><span class="w" id="spin-shape-word">Ramp</span></button>
+          <button class="ibtn" id="btn-spin-link" title="Attach/detach spin (bakes angle on detach)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M9.5 3.5H3.5v9h6"/><path d="M6.5 8h6M10.5 5.5 13 8l-2.5 2.5"/></svg></span><span class="w" id="spin-link-word">Link</span></button>
+          <button class="ibtn" id="btn-spin-mode" title="Spin basis: Rate (turns/sec) or Count (turns over Start–End)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.5 5.5h9M9 3l2.5 2.5L9 8"/><path d="M13.5 10.5h-9M7 8l-2.5 2.5L7 13"/></svg></span><span class="w" id="spin-mode-word">Rate</span></button>
+          <button class="ibtn" id="btn-spin-shape" title="Spin shape: Ramp (one way) or Wave (pendulum)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M1.5 8c2-4 4-4 6.5 0s4.5 4 6.5 0"/></svg></span><span class="w" id="spin-shape-word">Ramp</span></button>
         </div>
       </div>
     </details>
 
     <details class="camgroup" open>
-      <summary>RAIL<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>RAIL<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow prow3"><div class="axis"><span class="cw">Width</span><input id="rail-widthr" type="range" min="100" max="8000" step="10" value="2500" title="Rail diameter"><input id="rail-width" type="number" step="10" value="2500" title="Rail diameter"></div><div class="axis"><span class="cw">Prog</span><input id="rail-progr" type="range" min="0" max="100" step="0.5" value="0" title="Orbit progress %"><input id="rail-prog" type="number" step="0.5" value="0" title="Orbit progress %"></div><div class="axis"><span class="cw">Height</span><input id="rail-heightr" type="range" min="-2000" max="2000" step="10" value="0" title="Height above rail"><input id="rail-height" type="number" step="10" value="0" title="Height above rail"></div></div>
         <div class="row prow prow3"><span class="w">Tilt</span><div class="axis"><input id="rail-tiltxr" type="range" min="-180" max="180" step="1" value="0" title="Rail tilt X"><div class="axrow"><span class="ax">X</span><input id="rail-tiltx" type="number" step="1" value="0" title="Rail tilt X"></div></div><div class="axis"><input id="rail-tiltzr" type="range" min="-180" max="180" step="1" value="0" title="Rail tilt Z"><div class="axrow"><span class="ax">Z</span><input id="rail-tiltz" type="number" step="1" value="0" title="Rail tilt Z"></div></div></div>
         <div class="row" role="group" aria-label="Rail plane">
-          <button class="ibtn" id="btn-plane-floor" title="Flat orbit floor"><span class="g">▬</span><span class="w">Floor</span></button>
-          <button class="ibtn" id="btn-plane-wall" title="Vertical front wall"><span class="g">▯</span><span class="w">Wall</span></button>
-          <button class="ibtn" id="btn-plane-side" title="Vertical side wall"><span class="g">◫</span><span class="w">Side</span></button>
+          <button class="ibtn" id="btn-plane-floor" title="Flat orbit floor"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><ellipse cx="8" cy="6.5" rx="4.5" ry="1.8"/><path d="M2.5 11.5h11"/></svg></span><span class="w">Floor</span></button>
+          <button class="ibtn" id="btn-plane-wall" title="Vertical front wall"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><rect x="5" y="2.5" width="6" height="11"/></svg></span><span class="w">Wall</span></button>
+          <button class="ibtn" id="btn-plane-side" title="Vertical side wall"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><rect x="3" y="3" width="10" height="10"/><path d="M3 13 13 3"/></svg></span><span class="w">Side</span></button>
         </div>
         <div class="row prow prow3"><span class="w">Rail</span><div class="axis"><input id="rail-xr" type="range" min="-4000" max="4000" step="10" value="960" title="Rail position X"><div class="axrow"><span class="ax">X</span><input id="rail-x" type="number" step="10" value="960" title="Rail position X"></div></div><div class="axis"><input id="rail-yr" type="range" min="-4000" max="4000" step="10" value="540" title="Rail position Y"><div class="axrow"><span class="ax">Y</span><input id="rail-y" type="number" step="10" value="540" title="Rail position Y"></div></div><div class="axis"><input id="rail-zr" type="range" min="-4000" max="4000" step="10" value="0" title="Rail position Z"><div class="axrow"><span class="ax">Z</span><input id="rail-z" type="number" step="10" value="0" title="Rail position Z"></div></div></div>
         <div class="row">
-          <button class="ibtn primary" id="btn-rail-build" title="Build circle rail"><span class="g">○</span><span class="w">Rail</span></button>
-          <button class="ibtn" id="btn-rail-clear" title="Remove rail expression"><span class="g">✕</span><span class="w">Clear</span></button>
-          <button class="ibtn" id="btn-rail-look" title="Follow rail center on/off"><span class="g">◉</span><span class="w">Look</span></button>
-          <button class="ibtn" id="btn-rail-focus" title="Toggle focus on rail center"><span class="g">◎</span><span class="w">Focus</span></button>
-          <button class="ibtn" id="btn-rail-diag" title="Diagnose motion chain"><span class="g">?</span><span class="w">Diag</span></button>
+          <button class="ibtn primary" id="btn-rail-build" title="Build circle rail"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/></svg></span><span class="w">Rail</span></button>
+          <button class="ibtn" id="btn-rail-clear" title="Remove rail expression"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></span><span class="w">Clear</span></button>
+          <button class="ibtn" id="btn-rail-look" title="Follow rail center on/off"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6" fill="currentColor" stroke="none"/></svg></span><span class="w">Look</span></button>
+          <button class="ibtn" id="btn-rail-focus" title="Toggle focus on rail center"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="w">Focus</span></button>
+          <button class="ibtn" id="btn-rail-diag" title="Diagnose motion chain"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M1.5 8h3l1.5-4 3 8 1.5-4h4"/></svg></span><span class="w">Diag</span></button>
         </div>
       </div>
     </details>
 
     <details class="camgroup" open>
-      <summary>MOTION<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>MOTION<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow"><span class="w">Orbit</span><input id="rail-orbitr" type="range" min="-5" max="5" step="0.05" value="0" title="Orbit turns/sec (0 = still)"><input id="rail-orbit" type="number" step="0.05" value="0" title="Orbit turns/sec (0 = still)"></div>
         <div class="row prow"><span class="w">Start</span><input id="rail-t0" type="number" step="0.5" value="0" title="Motion start (sec, auto on Run)"></div>
         <div class="row prow"><span class="w">End</span><input id="rail-t1" type="number" step="0.5" value="0" title="Motion end (sec, 0 = infinite)"></div>
         <div class="row">
-          <button class="ibtn primary" id="btn-motion-run" title="Start armed motions (orbit/travel/spin)"><span class="g">▶</span><span class="w">Run</span></button>
-          <button class="ibtn" id="btn-motion-stop" title="Freeze all motions here"><span class="g">⏸</span><span class="w">Stop</span></button>
-          <button class="ibtn" id="btn-motion-mode" title="Orbit basis: Rate (turns/sec) or Count (turns over Start–End)"><span class="g">⇄</span><span class="w" id="motion-mode-word">Rate</span></button>
+          <button class="ibtn primary" id="btn-motion-run" title="Start armed motions (orbit/travel/spin)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M4.5 2.8v10.4L12.5 8z"/></svg></span><span class="w">Run</span></button>
+          <button class="ibtn" id="btn-motion-stop" title="Freeze all motions here"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M5.5 3v10M10.5 3v10"/></svg></span><span class="w">Stop</span></button>
+          <button class="ibtn" id="btn-motion-mode" title="Orbit basis: Rate (turns/sec) or Count (turns over Start–End)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.5 5.5h9M9 3l2.5 2.5L9 8"/><path d="M13.5 10.5h-9M7 8l-2.5 2.5L7 13"/></svg></span><span class="w" id="motion-mode-word">Rate</span></button>
         </div>
       </div>
     </details>
 
     <details class="camgroup">
-      <summary>TRAVEL<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g">↺</span></button></summary>
+      <summary>TRAVEL<button class="ibtn grst" title="Reset group to snapshot" aria-label="Reset group to snapshot"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.8 6.5A5.5 5.5 0 1 1 2.5 10"/><path d="M2.8 2.8v3.7h3.7"/></svg></span></button></summary>
       <div class="camrows">
         <div class="row prow"><span class="w">Size</span><input id="rail-wamtr" type="range" min="-1000" max="1000" step="10" value="0" title="Travel amount px (0 = still)"><input id="rail-wamt" type="number" step="10" value="0" title="Travel amount px (0 = still)"></div>
         <div class="row prow"><span class="w">Start</span><input id="rail-w0" type="number" step="0.5" value="0" title="Travel start (sec, auto on Run)"></div>
         <div class="row prow"><span class="w">End</span><input id="rail-w1" type="number" step="0.5" value="0" title="Travel end (sec, 0 = endless wobble)"></div>
         <div class="row">
-          <button class="ibtn" id="btn-travel-dir" title="Travel direction: grow or shrink first"><span class="g">±</span><span class="w" id="travel-dir-word">Grow</span></button>
-          <button class="ibtn" id="btn-travel-mode" title="Travel basis: Rate (wobble/sec) or Span (ramp over Start–End)"><span class="g">⇄</span><span class="w" id="travel-mode-word">Rate</span></button>
-          <button class="ibtn" id="btn-travel-shape" title="Travel shape: Ramp (one way) or Wave (forth and back)"><span class="g">〜</span><span class="w" id="travel-shape-word">Wave</span></button>
+          <button class="ibtn" id="btn-travel-dir" title="Travel direction: grow or shrink first"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M8 2v7M4.5 5.5h7"/><path d="M4 12.5h8"/></svg></span><span class="w" id="travel-dir-word">Grow</span></button>
+          <button class="ibtn" id="btn-travel-mode" title="Travel basis: Rate (wobble/sec) or Span (ramp over Start–End)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M2.5 5.5h9M9 3l2.5 2.5L9 8"/><path d="M13.5 10.5h-9M7 8l-2.5 2.5L7 13"/></svg></span><span class="w" id="travel-mode-word">Rate</span></button>
+          <button class="ibtn" id="btn-travel-shape" title="Travel shape: Ramp (one way) or Wave (forth and back)"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M1.5 8c2-4 4-4 6.5 0s4.5 4 6.5 0"/></svg></span><span class="w" id="travel-shape-word">Wave</span></button>
         </div>
       </div>
     </details>
@@ -131,8 +131,8 @@
 
   <section id="sec-debug" hidden aria-label="Debug log">
     <div class="row">
-      <button class="ibtn" id="btn-log-clear" title="Clear log"><span class="g">✕</span><span class="w">Clear</span></button>
-      <button class="ibtn" id="btn-log-copy" title="Copy full log to clipboard"><span class="g">⧉</span><span class="w">Copy</span></button>
+      <button class="ibtn" id="btn-log-clear" title="Clear log"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></span><span class="w">Clear</span></button>
+      <button class="ibtn" id="btn-log-copy" title="Copy full log to clipboard"><span class="g"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><rect x="5.5" y="5.5" width="7.5" height="7.5"/><path d="M10.5 5.5v-3h-8v8h3"/></svg></span><span class="w">Copy</span></button>
     </div>
     <ol id="vrt-log"></ol>
   </section>
